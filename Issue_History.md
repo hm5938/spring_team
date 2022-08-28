@@ -5,7 +5,7 @@
 
 <!-- summary 아래 한칸 공백 두어야함 -->
 ###   
-> ### Token에서 Claim을 반환하는 함수 parseClaims() 에서 Error 발생
+> ### Token에서 Claims을 반환하는 함수 parseClaims() 에서 Error 발생
 ```java
 public Claims parseClaims(String accessToken) {
     try {
