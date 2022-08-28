@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.Hibernate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -45,7 +46,7 @@ public class Member extends Timestamped {
         return getClass().hashCode();
     }
 
-//    public boolean validatePassword(PasswordEncoder passwordEncoder, String password) {
-//        return passwordEncoder.matches(password, this.password);
-//    }
+    public boolean validatePassword(PasswordEncoder passwordEncoder, String password) {
+        return passwordEncoder.matches(password, this.password);
+    }
 }

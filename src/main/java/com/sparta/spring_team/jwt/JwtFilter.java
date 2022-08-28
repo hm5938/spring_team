@@ -1,7 +1,7 @@
 package com.sparta.spring_team.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sparta.spring_team.dto.ResponseDto;
+import com.sparta.spring_team.dto.response.ResponseDto;
 import com.sparta.spring_team.service.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

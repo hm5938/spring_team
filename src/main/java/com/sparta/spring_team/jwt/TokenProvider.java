@@ -1,6 +1,6 @@
 package com.sparta.spring_team.jwt;
 
-import com.sparta.spring_team.dto.ResponseDto;
+import com.sparta.spring_team.dto.response.ResponseDto;
 import com.sparta.spring_team.dto.request.TokenDto;
 import com.sparta.spring_team.entity.Member;
 import com.sparta.spring_team.entity.RefreshToken;
@@ -11,7 +11,6 @@ import com.sparta.spring_team.shared.Authority;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -77,38 +76,29 @@ public class TokenProvider {
 
         refreshTokenRepository.save(refreshTokenObject);
 
-        getAuthentication(accessToken);
-
         return TokenDto.builder()
                 .grantType(BEARER_PREFIX)
                 .accessToken(accessToken)
                 .accessTokenExpiresIn(accessTokenExpiresIn.getTime())
                 .refreshToken(refreshToken)
                 .build();
-
     }
 
-  public void getAuthentication(String accessToken) {
+  public Authentication getAuthentication(String accessToken) {
     Claims claims = parseClaims(accessToken);
 
     if (claims.get(AUTHORITIES_KEY) == null) {
       throw new RuntimeException("권한 정보가 없는 토큰 입니다.");
     }
 
-      System.out.println(claims.get(AUTHORITIES_KEY));
-      System.out.println(claims.get(AUTHORITIES_KEY).toString());
+    Collection<? extends GrantedAuthority> authorities =
+        Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+            .map(SimpleGrantedAuthority::new)
+            .collect(Collectors.toList());
 
-//    Collection<? extends GrantedAuthority> authorities =
-//        Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-//            .map(SimpleGrantedAuthority::new)
-//            .collect(Collectors.toList());
-//      SimpleGrantedAuthority authority = new SimpleGrantedAuthority(Authority.ROLE_MEMBER.toString());
-//      Collection<GrantedAuthority> authorities = new ArrayList<>();
-//      authorities.add(authority);
+    UserDetails principal = userDetailsServiceImpl.loadUserByUsername(claims.getSubject());
 
-//    UserDetails principal = userDetailsServiceImpl.loadUserByUsername(claims.getSubject());
-//
-//    return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    return new UsernamePasswordAuthenticationToken(principal, "", authorities);
   }
 
     public Member getMemberFromAuthentication() {
@@ -136,13 +126,13 @@ public class TokenProvider {
         return false;
     }
 
-  public Claims parseClaims(String accessToken) {
-    try {
-      return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
-    } catch (ExpiredJwtException e) {
-      return e.getClaims();
+    public Claims parseClaims(String accessToken) {
+        try {
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
     }
-  }
 
     @Transactional(readOnly = true)
     public RefreshToken isPresentRefreshToken(Member member) {

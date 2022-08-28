@@ -1,7 +1,7 @@
 package com.sparta.spring_team.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sparta.spring_team.dto.ResponseDto;
+import com.sparta.spring_team.dto.response.ResponseDto;
 import java.io.IOException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;

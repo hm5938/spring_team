@@ -1,4 +1,4 @@
-package com.sparta.spring_team.dto;
+package com.sparta.spring_team.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -14,10 +14,4 @@ public class SpringTeamApplication {
 		SpringApplication.run(SpringTeamApplication.class, args);
 	}
 
-	@Bean
-	public CommandLineRunner demo() {
-		return (args) -> {
-
-		};
-	}
 }
