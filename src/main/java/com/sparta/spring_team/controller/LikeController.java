@@ -27,4 +27,10 @@ public class LikeController {
         Member member = userDetails.getMember();
         return likeService.createLike(requestDto, member);
     }
+
+    @RequestMapping(value = "/auth/likes/delete", method = RequestMethod.POST)
+    public ResponseDto<?> deletelike (@RequestBody @Valid LikeRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        Member member = userDetails.getMember();
+        return likeService.deleteLike(requestDto,member);
+    }
 }
