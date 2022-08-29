@@ -19,12 +19,10 @@ public class SubComment extends Timestamped{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @JoinColumn(name = "comment_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private Comment comment;
 
-//    @JoinColumn(name = "member_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private Member member;
