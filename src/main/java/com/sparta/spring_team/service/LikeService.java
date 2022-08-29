@@ -45,6 +45,7 @@ public class LikeService {
         }
         Likes like = likeRepository.findByPostOrCommentOrSubcommentAndTypeAndMember(post,comment,subComment,likeType,member);
         if(like!= null) return ResponseDto.fail("DUPLICATE_LIKES","이미 좋아요를 눌렀습니다");
+        addLikeNum(likeType,true,post, comment, subComment);
         return ResponseDto.success(likeRepository.save(new Likes(likeDto, member)));
     }
 
@@ -70,7 +71,21 @@ public class LikeService {
             return ResponseDto.fail("INVAILD_LIKES","해당 좋아요가 존재하지 않습니다.");
         }
         likeRepository.delete(like);
+        addLikeNum(likeType,false,post, comment, subComment);
         return ResponseDto.success("success delete like");
     }
 
+    public void addLikeNum(LikeType likeType, boolean isadd, Post post, Comment comment, SubComment subComment){
+        switch (likeType){
+            case Post:
+                post.addLikeNum(isadd);
+                break;
+            case Comment:
+                comment.addLikeNum(isadd);
+                break;
+            case SubComment:
+                subComment.addLikeNum(isadd);
+                break;
+        }
+    }
 }

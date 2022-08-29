@@ -42,6 +42,13 @@ public class Post extends Timestamped{
     @Column()
     private Long likeNum;
 
-
+    public Long addLikeNum(boolean isadd){
+        if(isadd){
+            this.likeNum ++;
+        }else{
+            if(this.likeNum>0) this.likeNum --;
+        }
+        return this.likeNum;
+    }
 
 }
