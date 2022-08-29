@@ -23,4 +23,15 @@ public class PostService {
         Post post =postRepository.save(new Post(requestDto, member));
         return ResponseDto.success(post);
     }
+    @Transactional
+    public ResponseDto<?> updatePost(Long postid,PostRequestDto requestDto, Member member) {
+        Optional<Post> postOptional = postRepository.findById(postid);
+        if(postOptional.isEmpty()){
+            return ResponseDto.fail("INVAILD_POST","존재하기 않는 게시글 입니다");
+        }else if(!postOptional.get().getMember().equals(member)){
+            return ResponseDto.fail("NOT_POSTING_USER","게시글 작성자가 아닙니다.");
+        }
+        Post post = postOptional.get();
+        return ResponseDto.success(post.update(requestDto));
+    }
 }

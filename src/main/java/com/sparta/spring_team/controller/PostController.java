@@ -26,5 +26,11 @@ public class PostController {
         return result;
     }
 
+    @RequestMapping(value = "/auth/posts/{postid}", method = RequestMethod.PUT )
+    public ResponseDto<?> updatePost(@PathVariable Long postid, @RequestBody @Valid PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        Member member = userDetails.getMember();
+        return postService.updatePost(postid,requestDto, member);
+    }
+
 
 }

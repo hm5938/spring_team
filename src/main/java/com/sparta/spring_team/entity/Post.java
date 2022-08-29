@@ -51,4 +51,11 @@ public class Post extends Timestamped{
         this.likeNum = Long.valueOf(0);
     }
 
+    public Post update(PostRequestDto requestDto) {
+        this.content = requestDto.getContent();
+        this.title = requestDto.getTitle();
+        this.imageUrl = requestDto.getImageUrl();
+        return this;
+    }
+
 }
