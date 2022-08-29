@@ -48,11 +48,6 @@ public class Member extends Timestamped{
     @JsonIgnore
     private List<Likes> likes;
 
-
-
-
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
