@@ -1,41 +1,44 @@
 package com.sparta.spring_team.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Comment extends Timestamped {
-
+public class Comment extends Timestamped{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @JoinColumn(name = "member_id", nullable = false)
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    private Member member;
-//
-//    @JoinColumn(name = "post_id", nullable = false)
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    private Post post;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Member member;
 
     @Column(nullable = false)
-    private String content;
+    private String comment;
 
-    //좋아요 추가
 
-//    public void update(CommentRequestDto commentRequestDto) {
-//        this.content = commentRequestDto.getContent();
-//    }
-//
-//    public boolean validateMember(Member member) {
-//        return !this.member.equals(member);
-//    }
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.ALL)
+    private List<SubComment> subComments;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Likes> likes;
+
+    @Column()
+    private Long likeNum;
+
 }
