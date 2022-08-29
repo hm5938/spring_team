@@ -32,5 +32,11 @@ public class PostController {
         return postService.updatePost(postid,requestDto, member);
     }
 
+    @RequestMapping(value = "/auth/posts/{postid}", method = RequestMethod.DELETE )
+    public ResponseDto<?> deletePost(@PathVariable Long postid, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        Member member = userDetails.getMember();
+        return postService.deletePost(postid, member);
+    }
+
 
 }
