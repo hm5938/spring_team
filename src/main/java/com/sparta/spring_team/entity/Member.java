@@ -9,6 +9,7 @@ import org.hibernate.Hibernate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Builder
@@ -16,8 +17,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Member extends Timestamped {
-
+public class Member extends Timestamped{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,8 +26,32 @@ public class Member extends Timestamped {
     private String membername;
 
     @Column(nullable = false)
-    @JsonIgnore
     private String password;
+
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "member", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private List<Post> posts;
+
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "member", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private List<SubComment> subComments;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private List<Comment> comments;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private RefreshToken refreshToken;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private List<Likes> likes;
+
+
+
+
+
 
     @Override
     public boolean equals(Object o) {
@@ -49,4 +73,5 @@ public class Member extends Timestamped {
     public boolean validatePassword(PasswordEncoder passwordEncoder, String password) {
         return passwordEncoder.matches(password, this.password);
     }
+
 }

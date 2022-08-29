@@ -14,31 +14,28 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Comment extends Timestamped{
+public class SubComment extends Timestamped{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    private Post post;
+    private Comment comment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private Member member;
 
     @Column(nullable = false)
-    private String comment;
+    private String subComment;
 
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.ALL)
-    private List<SubComment> subComments;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "subcomment", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Likes> likes;
 
     @Column()
     private Long likeNum;
+
 
 }
