@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Service
 public class LikeService {
@@ -39,7 +41,7 @@ public class LikeService {
                 likeDto.setData(comment);
                 break;
             case SubComment:
-                subComment = subCommentRepository.findById(requestDto.getData()).orElseThrow(()-> new RuntimeException("해당 대댓글 없ㄷ음")) ;
+                subComment = subCommentRepository.findById(requestDto.getData()).orElseThrow(()-> new RuntimeException("해당 대댓글 없음")) ;
                 likeDto.setData(subComment);
                 break;
         }
@@ -87,5 +89,16 @@ public class LikeService {
                 subComment.addLikeNum(isadd);
                 break;
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Likes isPresentLike(Long id){
+        Optional<Likes> optionalLike = likeRepository.findById(id);
+        return optionalLike.orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public Likes isPresentLike(Post post, Comment comment, SubComment subComment, LikeType likeType, Member member){
+        return likeRepository.findByPostOrCommentOrSubcommentAndTypeAndMember(post,comment,subComment,likeType,member);
     }
 }
