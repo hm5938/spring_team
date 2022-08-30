@@ -1,6 +1,7 @@
 package com.sparta.spring_team.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sparta.spring_team.dto.request.PostRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,6 +43,7 @@ public class Post extends Timestamped{
     @Column()
     private Long likeNum;
 
+
     public Long addLikeNum(boolean isadd){
         if(isadd){
             this.likeNum ++;
@@ -49,6 +51,20 @@ public class Post extends Timestamped{
             if(this.likeNum>0) this.likeNum --;
         }
         return this.likeNum;
+
+    public Post(PostRequestDto requestDto, Member member){
+        this.content = requestDto.getContent();
+        this.title = requestDto.getTitle();
+        this.imageUrl = requestDto.getImageUrl();
+        this.member = member;
+        this.likeNum = Long.valueOf(0);
+    }
+
+    public Post update(PostRequestDto requestDto) {
+        this.content = requestDto.getContent();
+        this.title = requestDto.getTitle();
+        this.imageUrl = requestDto.getImageUrl();
+        return this;
     }
 
 }
