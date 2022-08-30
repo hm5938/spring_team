@@ -39,5 +39,9 @@ public class PostController {
     public ResponseDto<?> readPost(@PathVariable Long postid){
         return postService.readPost(postid);
     }
+    @RequestMapping(value = "/posts", method = RequestMethod.GET )
+    public ResponseDto<?> readAllPost(){
+        return postService.readAllPosts();
+    }
 
 }

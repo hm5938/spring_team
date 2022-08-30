@@ -64,6 +64,13 @@ public class PostService {
         postRepository.delete(post);
         return ResponseDto.success("delete post id "+postid);
     }
+    @Transactional
+    public ResponseDto<?> readAllPosts() {
+        //T
+        List<Post> posts = postRepository.findAll();
+        PostListResponseDto postListResponseDto = new PostListResponseDto();
+        return ResponseDto.success(postListResponseDto.getPostList(posts));
+    }
 
     @Transactional
     public ResponseDto<?> readPost(Long postid) {
