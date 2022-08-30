@@ -25,13 +25,13 @@ public class SubComment extends Timestamped{
     @JsonIgnore
     private Member member;
 
+    @Column(nullable = false)
+    private String content;
+
     @JoinColumn(name = "comment_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private Comment comment;
-
-    @Column(nullable = false)
-    private String content;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "subcomment", cascade = CascadeType.ALL)
     @JsonIgnore

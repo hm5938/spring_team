@@ -35,6 +35,7 @@ public class Comment extends Timestamped{
 
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<SubComment> subComments;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.ALL)
