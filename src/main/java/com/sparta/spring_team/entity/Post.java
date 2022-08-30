@@ -40,25 +40,15 @@ public class Post extends Timestamped{
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Likes> likes;
-    @Column()
-    private Long likeNum;
 
 
-    public Long addLikeNum(boolean isadd){
-        if(isadd){
-            this.likeNum ++;
-        }else{
-            if(this.likeNum>0) this.likeNum --;
-        }
-        return this.likeNum;
-    }
+
 
     public Post(PostRequestDto requestDto, Member member){
         this.content = requestDto.getContent();
         this.title = requestDto.getTitle();
         this.imageUrl = requestDto.getImageUrl();
         this.member = member;
-        this.likeNum = Long.valueOf(0);
     }
 
     public Post update(PostRequestDto requestDto) {

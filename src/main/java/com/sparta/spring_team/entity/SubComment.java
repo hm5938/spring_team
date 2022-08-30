@@ -37,18 +37,7 @@ public class SubComment extends Timestamped{
     @JsonIgnore
     private List<Likes> likes;
 
-    @Column()
-    private Long likeNum;
-
     public SubComment update(SubCommentRequestDto requestDto){ this.content = requestDto.getContent(); return this; }
     public boolean validateMember(Member member){ return this.member.equals(member); }
 
-    public Long addLikeNum(boolean isadd){
-        if(isadd){
-            this.likeNum ++;
-        }else{
-            if(likeNum>0) this.likeNum --;
-        }
-        return this.likeNum;
-    }
 }

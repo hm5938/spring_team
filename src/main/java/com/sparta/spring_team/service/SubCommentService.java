@@ -46,7 +46,6 @@ public class SubCommentService {
                 .member(member)
                 .comment(comment)
                 .content(requestDto.getContent())
-                .likeNum(Long.valueOf(0))
                 .build();
         subCommentRepository.save(subComment);
         return ResponseDto.success(subComment);
