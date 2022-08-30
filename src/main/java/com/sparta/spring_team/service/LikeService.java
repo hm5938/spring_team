@@ -20,12 +20,7 @@ import java.util.Optional;
 @Service
 public class LikeService {
     private final LikeRepository likeRepository;
-    private final PostRepository postRepository;
-    private final CommentRepository commentRepository;
-    private final SubCommentRepository subCommentRepository;
-
     private final PublicMethod publicMethod;
-
     private final PostService postService;
     private final CommentService commentService;
     private final SubCommentService subCommentService;
@@ -56,7 +51,6 @@ public class LikeService {
         }
         Likes like = likeRepository.findByPostOrCommentOrSubcommentAndTypeAndMember(post,comment,subComment,likeType,member);
         if(like!= null) return ResponseDto.fail("DUPLICATE_LIKES","이미 좋아요를 눌렀습니다");
-        addLikeNum(likeType,true,post, comment, subComment);
         return ResponseDto.success(likeRepository.save(new Likes(likeDto, member)));
     }
 
@@ -88,23 +82,9 @@ public class LikeService {
         }
 
         likeRepository.delete(like);
-        addLikeNum(likeType,false,post, comment, subComment);
         return ResponseDto.success("success delete like");
     }
 
-    public void addLikeNum(LikeType likeType, boolean isadd, Post post, Comment comment, SubComment subComment){
-        switch (likeType){
-            case Post:
-                post.addLikeNum(isadd);
-                break;
-            case Comment:
-                comment.addLikeNum(isadd);
-                break;
-            case SubComment:
-                subComment.addLikeNum(isadd);
-                break;
-        }
-    }
 
     @Transactional(readOnly = true)
     public Likes isPresentLike(Long id){

@@ -45,14 +45,4 @@ public class Comment extends Timestamped{
 
     public boolean validateMember(Member member){ return !this.member.equals(member); }
 
-    @Column()
-    private Long likeNum;
-    public Long addLikeNum(boolean isadd){
-        if(isadd){
-            this.likeNum ++;
-        }else{
-            if(likeNum>0) this.likeNum --;
-        }
-        return this.likeNum;
-    }
 }
