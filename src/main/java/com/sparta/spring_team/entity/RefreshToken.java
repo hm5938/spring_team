@@ -16,15 +16,15 @@ import javax.persistence.*;
 public class RefreshToken extends Timestamped {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long token_id;
+    @Column(nullable = false)
+    private Long id;
 
+    @JoinColumn(name = "member_id", nullable = false)
     @OneToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
     private Member member;
 
     @Column(nullable = false)
-    private String token;
+    private String value;
 
-    public void updateToekn(String token){ this.token = token; }
+    public void updateValue(String token){ this.value = token; }
 }
