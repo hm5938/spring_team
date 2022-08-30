@@ -35,13 +35,4 @@ public class PostController {
         return postService.deletePost(postid, request);
     }
 
-    @RequestMapping(value = "/posts/{postid}", method = RequestMethod.GET )
-    public ResponseDto<?> readPost(@PathVariable Long postid){
-        return postService.readPost(postid);
-    }
-    @RequestMapping(value = "/posts", method = RequestMethod.GET )
-    public ResponseDto<?> readAllPost(){
-        return postService.readAllPosts();
-    }
-
 }

@@ -5,14 +5,13 @@ import com.sparta.spring_team.dto.response.ResponseDto;
 import com.sparta.spring_team.entity.Comment;
 import com.sparta.spring_team.entity.Member;
 import com.sparta.spring_team.entity.Post;
-import com.sparta.spring_team.jwt.TokenProvider;
 import com.sparta.spring_team.repository.CommentRepository;
+import com.sparta.spring_team.shared.PublicMethod;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,27 +19,19 @@ import java.util.Optional;
 @Service
 public class CommentService {
     private final CommentRepository commentRepository;
-    private final TokenProvider tokenProvider;
+    private final PublicMethod publicMethod;
 
     private final PostService postService;
 
     @Transactional
     public ResponseDto<?> createComment(CommentRequestDto requestDto, HttpServletRequest request) {
-        if (null == request.getHeader("Refresh-Token")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND", "로그인이 필요합니다.");
-        }
+        ResponseDto result = publicMethod.checkLogin(request);
+        if(!result.isSuccess()) return result;
 
-        if (null == request.getHeader("Authorization")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND", "로그인이 필요합니다.");
-        }
+        Member member = (Member)result.getData();
 
-        Member member = validateMember(request);
-        if (null == member) {
-            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
-        }
-
-        //포스트 찾는 알고리즘
-        Post post = new Post();
+        //포스트
+        Post post = postService.isPresentPost(requestDto.getPostId());
         if (null == post) {
             return ResponseDto.fail("NOT_FOUND", "존재하지 않는 게시글입니다.");
         }
@@ -57,12 +48,13 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public ResponseDto<?> getAllCommentsByPost(Long postId) {
-        Post post = new Post();
-        //Post post = postService.isPresentPost(postId);
+        //포스트
+        Post post = postService.isPresentPost(postId);
         if (null == post) {
             return ResponseDto.fail("NOT_FOUND", "존재하지 않는 게시글입니다.");
         }
 
+        //댓글 목록
         List<Comment> commentList = commentRepository.findAllByPost(post);
 //        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
 //
@@ -80,20 +72,18 @@ public class CommentService {
         return ResponseDto.success(commentList);
     }
 
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getAllCommentsByMember(Member member) {
+        //멤버 댓글 목록
+        return ResponseDto.success(commentRepository.findAllByMember(member));
+    }
+
     @Transactional
     public ResponseDto<?> updateComment(Long id, CommentRequestDto requestDto, HttpServletRequest request) {
-        if (null == request.getHeader("Refresh-Token")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND", "로그인이 필요합니다.");
-        }
+        ResponseDto result = publicMethod.checkLogin(request);
+        if(!result.isSuccess()) return result;
 
-        if (null == request.getHeader("Authorization")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND", "로그인이 필요합니다.");
-        }
-
-        Member member = validateMember(request);
-        if (null == member) {
-            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
-        }
+        Member member = (Member)result.getData();
 
         Comment comment = isPresentComment(id);
         if (null == comment) {
@@ -109,18 +99,10 @@ public class CommentService {
 
     @Transactional
     public ResponseDto<?> deleteComment(Long id, HttpServletRequest request){
-        if (null == request.getHeader("Refresh-Token")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND", "로그인이 필요합니다.");
-        }
+        ResponseDto result = publicMethod.checkLogin(request);
+        if(!result.isSuccess()) return result;
 
-        if (null == request.getHeader("Authorization")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND", "로그인이 필요합니다.");
-        }
-
-        Member member = validateMember(request);
-        if (null == member) {
-            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
-        }
+        Member member = (Member)result.getData();
 
         Comment comment = isPresentComment(id);
         if (null == comment) {
@@ -139,13 +121,5 @@ public class CommentService {
     public Comment isPresentComment(Long id){
         Optional<Comment> optionalComment = commentRepository.findById(id);
         return optionalComment.orElse(null);
-    }
-
-    @Transactional
-    public Member validateMember(HttpServletRequest request) {
-        if (!tokenProvider.validateToken(request.getHeader("Refresh-Token"))) {
-            return null;
-        }
-        return tokenProvider.getMemberFromAuthentication();
     }
 }
