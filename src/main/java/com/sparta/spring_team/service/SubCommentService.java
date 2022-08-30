@@ -5,8 +5,8 @@ import com.sparta.spring_team.dto.response.ResponseDto;
 import com.sparta.spring_team.entity.Comment;
 import com.sparta.spring_team.entity.Member;
 import com.sparta.spring_team.entity.SubComment;
-import com.sparta.spring_team.jwt.TokenProvider;
 import com.sparta.spring_team.repository.SubCommentRepository;
+import com.sparta.spring_team.shared.PublicMethod;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,23 +19,15 @@ import java.util.Optional;
 @Service
 public class SubCommentService {
     private final SubCommentRepository subCommentRepository;
-    private final TokenProvider tokenProvider;
+    private final PublicMethod publicMethod;
     private final CommentService commentService;
 
     @Transactional
     public ResponseDto<?> createSubComment(SubCommentRequestDto requestDto, HttpServletRequest request) {
-        if (null == request.getHeader("Refresh-Token")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND", "로그인이 필요합니다.");
-        }
+        ResponseDto result = publicMethod.checkLogin(request);
+        if(!result.isSuccess()) return result;
 
-        if (null == request.getHeader("Authorization")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND", "로그인이 필요합니다.");
-        }
-
-        Member member = validateMember(request);
-        if (null == member) {
-            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
-        }
+        Member member = (Member)result.getData();
 
         Comment comment = commentService.isPresentComment(requestDto.getCommentId());
         if (null == comment) {
@@ -63,20 +55,17 @@ public class SubCommentService {
         return ResponseDto.success(subCommentList);
     }
 
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getAllSubCommentsByMember(Member member){
+        return ResponseDto.success(subCommentRepository.findAllByMember(member));
+    }
+
     @Transactional
     public ResponseDto<?> updateSubComment(Long id, SubCommentRequestDto requestDto, HttpServletRequest request) {
-        if (null == request.getHeader("Refresh-Token")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND", "로그인이 필요합니다.");
-        }
+        ResponseDto result = publicMethod.checkLogin(request);
+        if(!result.isSuccess()) return result;
 
-        if (null == request.getHeader("Authorization")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND", "로그인이 필요합니다.");
-        }
-
-        Member member = validateMember(request);
-        if (null == member) {
-            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
-        }
+        Member member = (Member)result.getData();
 
         SubComment subComment = isPresentSubComment(id);
         if (null == subComment) {
@@ -92,18 +81,10 @@ public class SubCommentService {
 
     @Transactional
     public ResponseDto<?> deleteSubComment(Long id, HttpServletRequest request){
-        if (null == request.getHeader("Refresh-Token")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND", "로그인이 필요합니다.");
-        }
+        ResponseDto result = publicMethod.checkLogin(request);
+        if(!result.isSuccess()) return result;
 
-        if (null == request.getHeader("Authorization")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND", "로그인이 필요합니다.");
-        }
-
-        Member member = validateMember(request);
-        if (null == member) {
-            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
-        }
+        Member member = (Member)result.getData();
 
         SubComment subComment = isPresentSubComment(id);
         if (null == subComment) {
@@ -122,13 +103,5 @@ public class SubCommentService {
     public SubComment isPresentSubComment(Long id){
         Optional<SubComment> optionalSubComment = subCommentRepository.findById(id);
         return optionalSubComment.orElse(null);
-    }
-
-    @Transactional
-    public Member validateMember(HttpServletRequest request) {
-        if (!tokenProvider.validateToken(request.getHeader("Refresh-Token"))) {
-            return null;
-        }
-        return tokenProvider.getMemberFromAuthentication();
     }
 }

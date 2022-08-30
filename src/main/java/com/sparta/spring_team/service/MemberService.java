@@ -5,7 +5,9 @@ import com.sparta.spring_team.dto.response.ResponseDto;
 import com.sparta.spring_team.dto.request.LoginRequestDto;
 import com.sparta.spring_team.dto.request.MemberRequestDto;
 import com.sparta.spring_team.dto.request.TokenDto;
+import com.sparta.spring_team.entity.Comment;
 import com.sparta.spring_team.entity.Member;
+import com.sparta.spring_team.entity.Post;
 import com.sparta.spring_team.jwt.TokenProvider;
 import com.sparta.spring_team.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -23,8 +27,11 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    //  private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TokenProvider tokenProvider;
+
+    private final PostService postService;
+    private final CommentService commentService;
+    private final SubCommentService subCommentService;
 
     @Transactional
     public ResponseDto<?> createMember(MemberRequestDto requestDto) {
@@ -106,6 +113,7 @@ public class MemberService {
 //    return ResponseDto.success("success");
 //  }
 
+    @Transactional
     public ResponseDto<?> logout(HttpServletRequest request) {
         if (!tokenProvider.validateToken(request.getHeader("Refresh-Token"))) {
             return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
@@ -118,6 +126,31 @@ public class MemberService {
 
         return tokenProvider.deleteRefreshToken(member);
     }
+
+    @Transactional(readOnly = true)
+    public ResponseDto<?> mypage(HttpServletRequest request){
+        if (!tokenProvider.validateToken(request.getHeader("Refresh-Token"))) {
+            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
+        }
+        Member member = tokenProvider.getMemberFromAuthentication();
+        if (null == member) {
+            return ResponseDto.fail("MEMBER_NOT_FOUND",
+                    "사용자를 찾을 수 없습니다.");
+        }
+
+        List<ResponseDto> responseList = new ArrayList<>();
+
+        //포스트 모두 조회
+        //List<Post> postList = postService.getAll
+        ResponseDto<?> commentsList = commentService.getAllCommentsByMember(member);
+        ResponseDto<?> subCommentsList = subCommentService.getAllSubCommentsByMember(member);
+
+        responseList.add(commentsList);
+        responseList.add(subCommentsList);
+
+        return ResponseDto.success(responseList);
+    }
+
 
     @Transactional(readOnly = true)
     public Member isPresentMember(String membername) {
