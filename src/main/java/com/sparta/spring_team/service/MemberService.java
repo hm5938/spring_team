@@ -43,7 +43,6 @@ public class MemberService {
                 .password(passwordEncoder.encode(requestDto.getPassword()))
                 .build();
         memberRepository.save(member);
-        System.out.println("success");
         return ResponseDto.success(
                 MemberResponseDto.builder()
                         .id(member.getId())
@@ -121,10 +120,8 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Member isPresentMember(String nickname) {
-        Optional<Member> optionalMember = memberRepository.findByMembername(nickname);
-        if(optionalMember.isPresent())
-            System.out.println(optionalMember.get().getMembername());
+    public Member isPresentMember(String membername) {
+        Optional<Member> optionalMember = memberRepository.findByMembername(membername);
         return optionalMember.orElse(null);
     }
 

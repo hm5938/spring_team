@@ -26,6 +26,7 @@ public class Member extends Timestamped{
     private String membername;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "member", cascade = CascadeType.REMOVE)
@@ -40,9 +41,9 @@ public class Member extends Timestamped{
     @JsonIgnore
     private List<Comment> comments;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.REMOVE)
-    @JsonIgnore
-    private RefreshToken refreshToken;
+//    @OneToOne(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.REMOVE)
+//    @JsonIgnore
+//    private RefreshToken refreshToken;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.REMOVE)
     @JsonIgnore
