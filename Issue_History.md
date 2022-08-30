@@ -60,7 +60,7 @@ public class WebSecurityConfig {
   
 </details>
 
-<br/>
+
 
 <details>
 <summary>22.08.30</summary>
