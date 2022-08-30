@@ -35,5 +35,9 @@ public class PostController {
         return postService.deletePost(postid, request);
     }
 
+    @RequestMapping(value = "/posts/{postid}", method = RequestMethod.GET )
+    public ResponseDto<?> readPost(@PathVariable Long postid){
+        return postService.readPost(postid);
+    }
 
 }
