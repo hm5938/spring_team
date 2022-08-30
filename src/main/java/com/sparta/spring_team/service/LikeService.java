@@ -8,10 +8,12 @@ import com.sparta.spring_team.repository.CommentRepository;
 import com.sparta.spring_team.repository.LikeRepository;
 import com.sparta.spring_team.repository.PostRepository;
 import com.sparta.spring_team.repository.SubCommentRepository;
+import com.sparta.spring_team.shared.PublicMethod;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -21,9 +23,17 @@ public class LikeService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final SubCommentRepository subCommentRepository;
-    @Transactional
-    public ResponseDto<?> createLike(LikeRequestDto requestDto, Member member){
 
+    private final PublicMethod publicMethod;
+
+    private final PostService postService;
+    private final CommentService commentService;
+    private final SubCommentService subCommentService;
+    @Transactional
+    public ResponseDto<?> createLike(LikeRequestDto requestDto, HttpServletRequest request){
+        ResponseDto result = publicMethod.checkLogin(request);
+        if(!result.isSuccess()) return result;
+        Member member = (Member) result.getData();
 
         LikeType likeType = LikeType.valueOf(requestDto.getLikeType());
         Post post =null; Comment comment =null; SubComment subComment =null;
@@ -32,16 +42,15 @@ public class LikeService {
                 .build();
         switch (likeType){
             case Post:
-                post = postRepository.findById( requestDto.getData()).orElseThrow(()-> new RuntimeException("해당 게시물 없음"));
+                post = postService.isPresentPost(requestDto.getData());
                 likeDto.setData(post);
-
                 break;
             case Comment:
-                comment = commentRepository.findById(requestDto.getData()).orElseThrow(()-> new RuntimeException("해당 댓글 없음"));
+                comment = commentService.isPresentComment(requestDto.getData());
                 likeDto.setData(comment);
                 break;
             case SubComment:
-                subComment = subCommentRepository.findById(requestDto.getData()).orElseThrow(()-> new RuntimeException("해당 대댓글 없음")) ;
+                subComment = subCommentService.isPresentSubComment(requestDto.getData());
                 likeDto.setData(subComment);
                 break;
         }
@@ -52,26 +61,32 @@ public class LikeService {
     }
 
     @Transactional
-    public ResponseDto<?> deleteLike(LikeRequestDto requestDto, Member member) {
+    public ResponseDto<?> deleteLike(LikeRequestDto requestDto, HttpServletRequest request) {
+        ResponseDto result = publicMethod.checkLogin(request);
+        if(!result.isSuccess()) return result;
+        Member member = (Member) result.getData();
+
         LikeType likeType = LikeType.valueOf(requestDto.getLikeType());
         Post post = null;
         Comment comment = null;
         SubComment subComment = null;
         switch (likeType){
             case Post:
-                post = postRepository.findById( requestDto.getData()).orElseThrow(()-> new RuntimeException("해당 게시물 없음"));
+                post = postService.isPresentPost(requestDto.getData());
                 break;
             case Comment:
-                comment = commentRepository.findById(requestDto.getData()).orElseThrow(()-> new RuntimeException("해당 댓글 없음"));
+                comment = commentService.isPresentComment(requestDto.getData());
                 break;
             case SubComment:
-                subComment = subCommentRepository.findById(requestDto.getData()).orElseThrow(()-> new RuntimeException("해당 대댓글 없ㄷ음")) ;
+                subComment = subCommentService.isPresentSubComment(requestDto.getData());
                 break;
         }
-        Likes like = likeRepository.findByPostOrCommentOrSubcommentAndTypeAndMember(post,comment,subComment,likeType,member);
+        Likes like = isPresentLike(post,comment,subComment,likeType,member);
+
         if(like == null){
             return ResponseDto.fail("INVAILD_LIKES","해당 좋아요가 존재하지 않습니다.");
         }
+
         likeRepository.delete(like);
         addLikeNum(likeType,false,post, comment, subComment);
         return ResponseDto.success("success delete like");
