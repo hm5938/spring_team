@@ -34,4 +34,5 @@ public class PostController {
     public ResponseDto<?> deletePost(@PathVariable Long postid,HttpServletRequest request){
         return postService.deletePost(postid, request);
     }
+
 }

@@ -40,7 +40,6 @@ public class CommentService {
                 .member(member)
                 .post(post)
                 .content(requestDto.getContent())
-                .likeNum(Long.valueOf(0))
                 .build();
 
         commentRepository.save(comment);
