@@ -4,10 +4,13 @@ import com.sparta.spring_team.dto.response.ResponseDto;
 import com.sparta.spring_team.entity.Member;
 import com.sparta.spring_team.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-
+@Slf4j
+@Component
 @RequiredArgsConstructor
 public class PublicMethod {
     private final TokenProvider tokenProvider;

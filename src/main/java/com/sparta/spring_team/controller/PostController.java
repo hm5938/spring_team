@@ -22,8 +22,7 @@ public class PostController {
 
     @RequestMapping(value = "/auth/posts", method = RequestMethod.POST)
     public ResponseDto<?> createPost(@RequestBody @Valid PostRequestDto requestDto,HttpServletRequest request) {
-        ResponseDto<?> result = postService.createPost(requestDto, request);
-        return result;
+            return postService.createPost(requestDto, request);
     }
 
     @RequestMapping(value = "/auth/posts/{postid}", method = RequestMethod.PUT )
