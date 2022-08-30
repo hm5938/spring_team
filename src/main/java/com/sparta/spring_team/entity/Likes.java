@@ -49,18 +49,12 @@ public class Likes {
         switch (likeDto.getLikeType()){
             case Post:
                 this.post = (Post) likeDto.getData();
-                this.comment =null;
-                this.subcomment =null;
                 break;
             case Comment:
                 this.comment = (Comment) likeDto.getData();
-                this.post = null;
-                this.subcomment =null;
                 break;
             case SubComment:
                 this.subcomment = (SubComment) likeDto.getData();
-                this.post = null;
-                this.comment = null;
                 break;
         }
         this.member = member;
