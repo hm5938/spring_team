@@ -2,6 +2,7 @@ package com.sparta.spring_team.repository;
 
 
 import com.sparta.spring_team.entity.Comment;
+import com.sparta.spring_team.entity.Member;
 import com.sparta.spring_team.entity.SubComment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,4 +13,5 @@ public interface SubCommentRepository extends JpaRepository<SubComment, Long> {
     Optional<SubComment> findById(Long id);
 
     List<SubComment> findAllByComment(Comment comment);
+    List<SubComment> findAllByMember(Member member);
 }

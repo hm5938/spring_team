@@ -43,5 +43,4 @@ public class PostController {
     public ResponseDto<?> readAllPost(){
         return postService.readAllPosts();
     }
-
 }
