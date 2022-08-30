@@ -140,13 +140,10 @@ public class MemberService {
 
         List<ResponseDto> responseList = new ArrayList<>();
 
-        //포스트 모두 조회
-        //List<Post> postList = postService.getAll
-        ResponseDto<?> commentsList = commentService.getAllCommentsByMember(member);
-        ResponseDto<?> subCommentsList = subCommentService.getAllSubCommentsByMember(member);
-
-        responseList.add(commentsList);
-        responseList.add(subCommentsList);
+        //글, 댓글, 대댓글 모두 조회
+        responseList.add(postService.readAllPostsByMember(member));
+        responseList.add(commentService.getAllCommentsByMember(member));
+        responseList.add(subCommentService.getAllSubCommentsByMember(member));
 
         return ResponseDto.success(responseList);
     }

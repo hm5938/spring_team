@@ -64,7 +64,7 @@ public class PostService {
         postRepository.delete(post);
         return ResponseDto.success("delete post id "+postid);
     }
-    @Transactional
+    @Transactional(readOnly = true)
     public ResponseDto<?> readAllPosts() {
         //T
         List<Post> posts = postRepository.findAll();
@@ -72,7 +72,7 @@ public class PostService {
         return ResponseDto.success(postListResponseDto.getPostList(posts));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public ResponseDto<?> readPost(Long postid) {
         Optional<Post> postOptional = postRepository.findById(postid);
         if (postOptional.isEmpty()) {
@@ -93,6 +93,11 @@ public class PostService {
                 .build();
 
         return ResponseDto.success(postResponseDto);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseDto<?> readAllPostsByMember(Member member){
+        return ResponseDto.success(postRepository.findAllByMember(member));
     }
 
     public Long getSubCommentNum(List<Comment> commentList) {
