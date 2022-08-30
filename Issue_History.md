@@ -60,4 +60,83 @@ public class WebSecurityConfig {
   
 </details>
 
+<br/>
+
+<details>
+<summary>22.08.30</summary>
+
+<!-- summary 아래 한칸 공백 두어야함 -->
+###   
+> ### TokenProvider 의 generateTokenDto()에서 repository.save()할 때 에러 발생 (SQL statement Error)
+```java
+public TokenDto generateTokenDto(Member member) {
+
+    ...
+    
+    RefreshToken refreshTokenObject = RefreshToken.builder()
+                .id(member.getId())
+                .member(member)
+                .value(refreshToken)
+                .build();
+
+    refreshTokenRepository.save(refreshTokenObject);
+
+    ...
+
+}
+```
+```java
+public class RefreshToken extends Timestamped {
+    @Id
+    @Column(nullable = false)
+    private Long id;
+
+    @JoinColumn(name = "member_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    private Member member;
+
+    @Column(nullable = false)
+    private String value;
+
+    public void updateValue(String token){ this.value = token; }
+}
+```
+**문제점 : RefreshToken 의 Column명이 SQL 예약어와 동일해서 발생한 문제<br/>**
+```java
+public TokenDto generateTokenDto(Member member) {
+
+    ...
+    
+    RefreshToken refreshTokenObject = RefreshToken.builder()
+                .id(member.getId())
+                .member(member)
+                .token(refreshToken)
+                .build();
+
+    refreshTokenRepository.save(refreshTokenObject);
+
+    ...
+
+}
+```
+```java
+public class RefreshToken extends Timestamped {
+    @Id
+    @Column(nullable = false)
+    private Long id;
+
+    @JoinColumn(name = "member_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    private Member member;
+
+    @Column(nullable = false)
+    private String token;
+
+    public void updateToken(String token){ this.token = token; }
+}
+```
+**해결법 : RefreshToken 의 Column명을 예약어와 겹치지 않게 수정해서 해결**
+
+  ***
+</details>
 
