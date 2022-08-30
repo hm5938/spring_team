@@ -1,6 +1,7 @@
 package com.sparta.spring_team.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sparta.spring_team.dto.request.SubCommentRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +29,7 @@ public class SubComment extends Timestamped{
     private Member member;
 
     @Column(nullable = false)
-    private String subComment;
+    private String content;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "subcomment", cascade = CascadeType.ALL)
     @JsonIgnore
@@ -36,6 +37,18 @@ public class SubComment extends Timestamped{
 
     @Column()
     private Long likeNum;
+
+    public SubComment(SubCommentRequestDto requestDto, Member member){
+        this.content = requestDto.getContent();
+        this.member = member;
+        this.likeNum = Long.valueOf(0);
+    }
+
+    public SubComment update(SubCommentRequestDto requestDto){
+        this.content = requestDto.getContent();
+
+        return this;
+    }
 
     public Long addLikeNum(boolean isadd){
         if(isadd){
