@@ -41,11 +41,15 @@ public class CommentService {
 
         //포스트 찾는 알고리즘
         Post post = new Post();
+        if (null == post) {
+            return ResponseDto.fail("NOT_FOUND", "존재하지 않는 게시글입니다.");
+        }
 
         Comment comment = Comment.builder()
                 .member(member)
                 .post(post)
                 .content(requestDto.getContent())
+                .likeNum(Long.valueOf(0))
                 .build();
 
         commentRepository.save(comment);

@@ -10,6 +10,9 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SubCommentRequestDto {
+
     @NotBlank
-    public String content;
+    private Long commentId;
+    @NotBlank
+    private String content;
 }
