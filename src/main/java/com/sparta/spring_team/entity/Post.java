@@ -51,6 +51,7 @@ public class Post extends Timestamped{
             if(this.likeNum>0) this.likeNum --;
         }
         return this.likeNum;
+    }
 
     public Post(PostRequestDto requestDto, Member member){
         this.content = requestDto.getContent();
