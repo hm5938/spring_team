@@ -18,6 +18,8 @@ public class ResponseDto<T> {
         return new ResponseDto<>(false, null, new Error(code, message));
     }
 
+
+
     @Getter
     @AllArgsConstructor
     static class Error {
