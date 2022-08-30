@@ -15,7 +15,7 @@ public class PostRequestDto {
     private String title;
     @NotBlank
     private String content;
-    @NotBlank
+
     private String imageUrl;
 
 
