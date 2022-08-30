@@ -20,13 +20,15 @@ public class SubComment extends Timestamped{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
-    private Comment comment;
-
+    @JoinColumn(name = "member_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private Member member;
+
+    @JoinColumn(name = "comment_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Comment comment;
 
     @Column(nullable = false)
     private String content;
@@ -38,17 +40,8 @@ public class SubComment extends Timestamped{
     @Column()
     private Long likeNum;
 
-    public SubComment(SubCommentRequestDto requestDto, Member member){
-        this.content = requestDto.getContent();
-        this.member = member;
-        this.likeNum = Long.valueOf(0);
-    }
-
-    public SubComment update(SubCommentRequestDto requestDto){
-        this.content = requestDto.getContent();
-
-        return this;
-    }
+    public SubComment update(SubCommentRequestDto requestDto){ this.content = requestDto.getContent(); return this; }
+    public boolean validateMember(Member member){ return this.member.equals(member); }
 
     public Long addLikeNum(boolean isadd){
         if(isadd){
