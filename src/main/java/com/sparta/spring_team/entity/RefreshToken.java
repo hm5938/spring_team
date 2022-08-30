@@ -14,7 +14,6 @@ import javax.persistence.*;
 @Builder
 @Entity
 public class RefreshToken extends Timestamped {
-
     @Id
     @Column(nullable = false)
     private Long id;
@@ -24,7 +23,7 @@ public class RefreshToken extends Timestamped {
     private Member member;
 
     @Column(nullable = false)
-    private String value;
+    private String token;
 
-    public void updateValue(String token){ this.value = token; }
+    public void updateToken(String token){ this.token = token; }
 }
