@@ -3,6 +3,7 @@ package com.sparta.spring_team.service;
 
 import com.sparta.spring_team.dto.request.PostRequestDto;
 import com.sparta.spring_team.dto.response.ResponseDto;
+import com.sparta.spring_team.entity.Comment;
 import com.sparta.spring_team.entity.Member;
 import com.sparta.spring_team.entity.Post;
 import com.sparta.spring_team.repository.PostRepository;
@@ -46,5 +47,11 @@ public class PostService {
         Post post = postOptional.get();
         postRepository.delete(post);
         return ResponseDto.success("delete post id "+postid);
+    }
+
+    @Transactional(readOnly = true)
+    public Post isPresentPost(Long id){
+        Optional<Post> optionalPost = postRepository.findById(id);
+        return optionalPost.orElse(null);
     }
 }
