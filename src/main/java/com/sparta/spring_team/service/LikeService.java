@@ -41,7 +41,7 @@ public class LikeService {
                 if (null == post) {
                     return ResponseDto.fail("NOT_FOUND", "존재하지 않는 게시글 입니다.");
                 }
-                Optional<PostLike> postLike = postLikeRepository.findbyPostAndMember(post, member);
+                Optional<PostLike> postLike = postLikeRepository.findByPostAndMember(post, member);
 
                 if(postLike.isPresent()) return ResponseDto.fail("DUPLICATE_LIKES", "이미 좋아요를 눌렀습니다");
                 return ResponseDto.success(postLikeRepository.save(PostLike.builder()
@@ -67,7 +67,7 @@ public class LikeService {
                 if (null == subComment) {
                     return ResponseDto.fail("NOT_FOUND", "존재하지 않는 대댓글 입니다.");
                 }
-                Optional<SubCommentLike> subCommentLike = subCommentLikeRepository.findBySubCommentAndMemeber(subComment, member);
+                Optional<SubCommentLike> subCommentLike = subCommentLikeRepository.findBySubcommentAndMember(subComment, member);
 
                 if(subCommentLike.isPresent()) return ResponseDto.fail("DUPLICATE_LIKES", "이미 좋아요를 눌렀습니다");
                 return ResponseDto.success(subCommentLikeRepository.save(SubCommentLike.builder()
@@ -92,7 +92,7 @@ public class LikeService {
                 if (null == post) {
                     return ResponseDto.fail("NOT_FOUND", "존재하지 않는 게시글 입니다.");
                 }
-                Optional<PostLike> postLike = postLikeRepository.findbyPostAndMember(post, member);
+                Optional<PostLike> postLike = postLikeRepository.findByPostAndMember(post, member);
 
                 if (postLike.isPresent()) {
                     postLikeRepository.delete(postLike.get());
@@ -118,7 +118,7 @@ public class LikeService {
                 if (null == subComment) {
                     return ResponseDto.fail("NOT_FOUND", "존재하지 않는 대댓글 입니다.");
                 }
-                Optional<SubCommentLike> subCommentLike = subCommentLikeRepository.findBySubCommentAndMemeber(subComment, member);
+                Optional<SubCommentLike> subCommentLike = subCommentLikeRepository.findBySubcommentAndMember(subComment, member);
 
                 if (subCommentLike.isPresent()) {
                     subCommentLikeRepository.delete(subCommentLike.get());

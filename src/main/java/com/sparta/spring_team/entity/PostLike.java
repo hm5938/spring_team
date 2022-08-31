@@ -22,7 +22,7 @@ public class PostLike {
     @JsonIgnore
     private Member member;
 
-    @JoinColumn(name = "post_id", nullable = false)
+    //@JoinColumn(name = "post_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private Post post;

@@ -11,8 +11,8 @@ import java.util.Optional;
 public interface SubCommentLikeRepository extends JpaRepository<SubCommentLike,Long> {
     Optional<SubCommentLike> findById(Long id);
 
-    List<SubCommentLike> findAllBySubComment(SubComment subcomment);
+    List<SubCommentLike> findAllBySubcomment(SubComment subcomment);
     List<SubCommentLike> findAllByMember(Member member);
 
-    Optional<SubCommentLike> findBySubCommentAndMemeber(SubComment subcomment, Member member);
+    Optional<SubCommentLike> findBySubcommentAndMember(SubComment subcomment, Member member);
 }

@@ -22,7 +22,6 @@ public class CommentLike {
     @JsonIgnore
     private Member member;
 
-    @JoinColumn(name = "comment_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private Comment comment;

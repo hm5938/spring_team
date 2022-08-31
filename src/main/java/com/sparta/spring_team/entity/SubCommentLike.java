@@ -22,7 +22,7 @@ public class SubCommentLike {
     @JsonIgnore
     private Member member;
 
-    @JoinColumn(name = "subcomment_id", nullable = false)
+    //@JoinColumn(name = "subcomment_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private SubComment subcomment;

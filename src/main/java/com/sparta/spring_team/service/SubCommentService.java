@@ -1,7 +1,9 @@
 package com.sparta.spring_team.service;
 
 import com.sparta.spring_team.dto.request.SubCommentRequestDto;
+import com.sparta.spring_team.dto.response.CommentResponseDto;
 import com.sparta.spring_team.dto.response.ResponseDto;
+import com.sparta.spring_team.dto.response.SubCommentResponseDto;
 import com.sparta.spring_team.entity.Comment;
 import com.sparta.spring_team.entity.Member;
 import com.sparta.spring_team.entity.SubComment;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,13 +53,44 @@ public class SubCommentService {
             return ResponseDto.fail("NOT_FOUND", "존재하지 않는 댓글입니다.");
         }
 
-        List<SubComment> subCommentList = subCommentRepository.findAllByComment(comment);
-        return ResponseDto.success(subCommentList);
+        //댓글 목록
+        List<SubCommentResponseDto> responseList = new ArrayList<>();
+        List<SubComment> subCommentsList= subCommentRepository.findAllByComment(comment);
+
+        for (SubComment subComment : subCommentsList) {
+            responseList.add(
+                    SubCommentResponseDto.builder()
+                            .id(subComment.getId())
+                            .membername(subComment.getMember().getMembername())
+                            .content(subComment.getContent())
+                            .likes(subComment.getLikesNum())
+                            .createdAt(subComment.getCreatedAt())
+                            .modifiedAt(subComment.getModifiedAt())
+                            .build()
+            );
+        }
+        return ResponseDto.success(responseList);
     }
 
     @Transactional(readOnly = true)
     public ResponseDto<?> getAllSubCommentsByMember(Member member){
-        return ResponseDto.success(subCommentRepository.findAllByMember(member));
+        //댓글 목록
+        List<SubCommentResponseDto> responseList = new ArrayList<>();
+        List<SubComment> subCommentsList= subCommentRepository.findAllByMember(member);
+
+        for (SubComment subComment : subCommentsList) {
+            responseList.add(
+                    SubCommentResponseDto.builder()
+                            .id(subComment.getId())
+                            .membername(subComment.getMember().getMembername())
+                            .content(subComment.getContent())
+                            .likes(subComment.getLikesNum())
+                            .createdAt(subComment.getCreatedAt())
+                            .modifiedAt(subComment.getModifiedAt())
+                            .build()
+            );
+        }
+        return ResponseDto.success(responseList);
     }
 
     @Transactional

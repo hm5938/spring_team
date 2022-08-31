@@ -1,6 +1,7 @@
 package com.sparta.spring_team.service;
 
 import com.sparta.spring_team.dto.request.CommentRequestDto;
+import com.sparta.spring_team.dto.response.CommentResponseDto;
 import com.sparta.spring_team.dto.response.ResponseDto;
 import com.sparta.spring_team.entity.Comment;
 import com.sparta.spring_team.entity.Member;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +24,7 @@ public class CommentService {
     private final PublicMethod publicMethod;
 
     private final PostService postService;
+    //private final SubCommentService subCommentService;
 
     @Transactional
     public ResponseDto<?> createComment(CommentRequestDto requestDto, HttpServletRequest request) {
@@ -55,27 +58,48 @@ public class CommentService {
         }
 
         //댓글 목록
-        List<Comment> commentList = commentRepository.findAllByPost(post);
-//        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
-//
-//        for (Comment comment : commentList) {
-//            commentResponseDtoList.add(
-//                    CommentResponseDto.builder()
-//                            .id(comment.getId())
-//                            .author(comment.getMember().getNickname())
-//                            .content(comment.getContent())
-//                            .createdAt(comment.getCreatedAt())
-//                            .modifiedAt(comment.getModifiedAt())
-//                            .build()
-//            );
-//        }
-        return ResponseDto.success(commentList);
+        List<CommentResponseDto> responseList = new ArrayList<>();
+        List<Comment> commentsList = commentRepository.findAllByPost(post);
+
+
+
+        for (Comment comment : commentsList) {
+            //ResponseDto result = subCommentService.getAllSubCommentsByComment(comment.getId());
+
+
+            responseList.add(
+                    CommentResponseDto.builder()
+                            .id(comment.getId())
+                            .membername(comment.getMember().getMembername())
+                            .content(comment.getContent())
+                            .subCommentsList(comment.getSubComments())
+                            .likes(comment.getLikesNum())
+                            .createdAt(comment.getCreatedAt())
+                            .modifiedAt(comment.getModifiedAt())
+                            .build()
+            );
+        }
+        return ResponseDto.success(responseList);
     }
 
     @Transactional(readOnly = true)
     public ResponseDto<?> getAllCommentsByMember(Member member) {
+        List<CommentResponseDto> responseList = new ArrayList<>();
+        List<Comment> commentsList= commentRepository.findAllByMember(member);
+
+        for(Comment comment : commentsList){
+            responseList.add(CommentResponseDto.builder()
+                            .id(comment.getId())
+                            .membername(comment.getMember().getMembername())
+                            .content(comment.getContent())
+                            .subCommentsList(comment.getSubComments())
+                            .likes(comment.getLikesNum())
+                            .createdAt(comment.getCreatedAt())
+                            .modifiedAt(comment.getModifiedAt())
+                            .build());
+        }
         //멤버 댓글 목록
-        return ResponseDto.success(commentRepository.findAllByMember(member));
+        return ResponseDto.success(responseList);
     }
 
     @Transactional

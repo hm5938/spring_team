@@ -20,12 +20,12 @@ public class Comment extends Timestamped{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "member_id", nullable = false)
+    //@JoinColumn(name = "member_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private Member member;
 
-    @JoinColumn(name = "post_id", nullable = false)
+    //@JoinColumn(name = "post_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private Post post;
@@ -46,4 +46,14 @@ public class Comment extends Timestamped{
 
     public boolean validateMember(Member member){ return !this.member.equals(member); }
 
+    public int getLikesNum(){
+        if(likes == null) return 0;
+
+        int count = 0;
+        for(CommentLike like : likes){
+            if(like.getComment().equals(this)) ++count;
+        }
+
+        return count;
+    }
 }

@@ -14,5 +14,5 @@ public interface PostLikeRepository extends JpaRepository<PostLike,Long> {
     List<PostLike> findAllByPost(Post post);
     List<PostLike> findAllByMember(Member member);
 
-    Optional<PostLike> findbyPostAndMember(Post post, Member member);
+    Optional<PostLike> findByPostAndMember(Post post, Member member);
 }
