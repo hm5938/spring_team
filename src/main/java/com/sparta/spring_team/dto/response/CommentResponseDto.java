@@ -1,6 +1,5 @@
 package com.sparta.spring_team.dto.response;
 
-import com.sparta.spring_team.entity.SubComment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,9 +16,8 @@ public class CommentResponseDto {      //게시글에 달린 댓글 목록 반�
     private Long id;
     private String membername;
     private String content;
-    //private List<SubCommentResponseDto> subCommentsList;
-    private List<SubComment> subCommentsList;
-    private int likes;
+    private List<SubCommentResponseDto> subCommentsList;
+    private Long likeNum;
 
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;

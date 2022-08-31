@@ -5,9 +5,7 @@ import com.sparta.spring_team.dto.response.ResponseDto;
 import com.sparta.spring_team.dto.request.LoginRequestDto;
 import com.sparta.spring_team.dto.request.MemberRequestDto;
 import com.sparta.spring_team.dto.request.TokenDto;
-import com.sparta.spring_team.entity.Comment;
 import com.sparta.spring_team.entity.Member;
-import com.sparta.spring_team.entity.Post;
 import com.sparta.spring_team.jwt.TokenProvider;
 import com.sparta.spring_team.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +30,7 @@ public class MemberService {
     private final PostService postService;
     private final CommentService commentService;
     private final SubCommentService subCommentService;
+    private final LikeService likeService;
 
     @Transactional
     public ResponseDto<?> createMember(MemberRequestDto requestDto) {
@@ -144,6 +143,11 @@ public class MemberService {
         responseList.add(postService.readAllPostsByMember(member));
         responseList.add(commentService.getAllCommentsByMember(member));
         responseList.add(subCommentService.getAllSubCommentsByMember(member));
+
+        //좋아요한 글, 댓글, 대댓글 모두 조회
+        responseList.add(likeService.getAllPostLikesByMember(member));
+        responseList.add(likeService.getAllCommentLikesByMember(member));
+        responseList.add(likeService.getAllSubCommentLikesByMember(member));
 
         return ResponseDto.success(responseList);
     }

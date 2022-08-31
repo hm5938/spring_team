@@ -45,15 +45,4 @@ public class Comment extends Timestamped{
     public Comment update(CommentRequestDto requestDto){ this.content = requestDto.getContent(); return this; }
 
     public boolean validateMember(Member member){ return !this.member.equals(member); }
-
-    public int getLikesNum(){
-        if(likes == null) return 0;
-
-        int count = 0;
-        for(CommentLike like : likes){
-            if(like.getComment().equals(this)) ++count;
-        }
-
-        return count;
-    }
 }
