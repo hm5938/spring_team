@@ -46,3 +46,7 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 targetCompatibility = JavaVersion.VERSION_11
+
+jar {
+	enabled = false
+}
