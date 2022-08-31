@@ -37,9 +37,9 @@ public class Post extends Timestamped{
     @JsonIgnore
     private List<Comment> comments;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.REMOVE)
     @JsonIgnore
-    private List<Likes> likes;
+    private List<PostLike> likes;
 
 
 
