@@ -25,7 +25,7 @@ public class LikeController {
         return likeService.createLike(requestDto, request);
     }
 
-    @RequestMapping(value = "/auth/likes/delete", method = RequestMethod.POST)
+    @RequestMapping(value = "/auth/likes", method = RequestMethod.DELETE)
     public ResponseDto<?> deletelike (@RequestBody @Valid LikeRequestDto requestDto, HttpServletRequest request){
         return likeService.deleteLike(requestDto,request);
     }

@@ -34,13 +34,13 @@ public class Comment extends Timestamped{
     private String content;
 
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<SubComment> subComments;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.REMOVE)
     @JsonIgnore
-    private List<Likes> likes;
+    private List<CommentLike> likes;
 
     public Comment update(CommentRequestDto requestDto){ this.content = requestDto.getContent(); return this; }
 

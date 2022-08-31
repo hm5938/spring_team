@@ -47,7 +47,15 @@ public class Member extends Timestamped{
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.REMOVE)
     @JsonIgnore
-    private List<Likes> likes;
+    private List<PostLike> postLikeList;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private List<CommentLike> commentLikeList;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private List<SubCommentLike> subCommentLikeList;
 
     @Override
     public boolean equals(Object o) {
