@@ -39,15 +39,4 @@ public class SubComment extends Timestamped{
 
     public SubComment update(SubCommentRequestDto requestDto){ this.content = requestDto.getContent(); return this; }
     public boolean validateMember(Member member){ return this.member.equals(member); }
-
-    public int getLikesNum(){
-        if(likes == null) return 0;
-
-        int count = 0;
-        for(SubCommentLike like : likes){
-            if(like.getSubcomment().equals(this)) ++count;
-        }
-
-        return count;
-    }
 }

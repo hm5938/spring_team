@@ -15,7 +15,7 @@ public class SubCommentResponseDto {
     private Long id;
     private String membername;
     private String content;
-    private int likes;
+    private Long likeNum;
 
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;

@@ -1,7 +1,6 @@
 package com.sparta.spring_team.service;
 
 import com.sparta.spring_team.dto.request.SubCommentRequestDto;
-import com.sparta.spring_team.dto.response.CommentResponseDto;
 import com.sparta.spring_team.dto.response.ResponseDto;
 import com.sparta.spring_team.dto.response.SubCommentResponseDto;
 import com.sparta.spring_team.entity.Comment;
@@ -63,7 +62,7 @@ public class SubCommentService {
                             .id(subComment.getId())
                             .membername(subComment.getMember().getMembername())
                             .content(subComment.getContent())
-                            .likes(subComment.getLikesNum())
+                            .likeNum(Long.valueOf(subComment.getLikes().size()))
                             .createdAt(subComment.getCreatedAt())
                             .modifiedAt(subComment.getModifiedAt())
                             .build()
@@ -84,7 +83,7 @@ public class SubCommentService {
                             .id(subComment.getId())
                             .membername(subComment.getMember().getMembername())
                             .content(subComment.getContent())
-                            .likes(subComment.getLikesNum())
+                            .likeNum(Long.valueOf(subComment.getLikes().size()))
                             .createdAt(subComment.getCreatedAt())
                             .modifiedAt(subComment.getModifiedAt())
                             .build()

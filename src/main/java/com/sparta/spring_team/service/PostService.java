@@ -2,12 +2,11 @@ package com.sparta.spring_team.service;
 
 
 import com.sparta.spring_team.dto.request.PostRequestDto;
-import com.sparta.spring_team.dto.response.PostListResponseDto;
-import com.sparta.spring_team.dto.response.PostResponseDto;
-import com.sparta.spring_team.dto.response.ResponseDto;
+import com.sparta.spring_team.dto.response.*;
 import com.sparta.spring_team.entity.Comment;
 import com.sparta.spring_team.entity.Member;
 import com.sparta.spring_team.entity.Post;
+import com.sparta.spring_team.entity.SubComment;
 import com.sparta.spring_team.repository.PostRepository;
 import com.sparta.spring_team.shared.PublicMethod;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,15 +79,49 @@ public class PostService {
             return ResponseDto.fail("INVAILD_POST", "존재하지 않는 게시글 입니다");
         }
         Post post = postOptional.get();
+
+        //댓글 목록
+        List<CommentResponseDto> responseList = new ArrayList<>();
+        List<Comment> comments = post.getComments();
+
+        for (Comment comment : comments) {
+            //대댓글 목록
+            List<SubCommentResponseDto> subResponseList = new ArrayList<>();
+            List<SubComment> subComments = comment.getSubComments();
+
+            for(SubComment subComment : subComments){
+                subResponseList.add(SubCommentResponseDto.builder()
+                        .id(subComment.getId())
+                        .membername(subComment.getMember().getMembername())
+                        .content(subComment.getContent())
+                        .likeNum(Long.valueOf(subComment.getLikes().size()))
+                        .createdAt(comment.getCreatedAt())
+                        .modifiedAt(comment.getModifiedAt())
+                        .build()
+                );
+            }
+
+            responseList.add(
+                    CommentResponseDto.builder()
+                            .id(comment.getId())
+                            .membername(comment.getMember().getMembername())
+                            .content(comment.getContent())
+                            .subCommentsList(subResponseList)
+                            .likeNum(Long.valueOf(comment.getLikes().size()))
+                            .createdAt(comment.getCreatedAt())
+                            .modifiedAt(comment.getModifiedAt())
+                            .build()
+            );
+        }
+
         PostResponseDto postResponseDto = PostResponseDto.builder()
                 .id(post.getId())
                 .memberName(post.getMember().getMembername())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .imageUrl(post.getImageUrl())
-                .commentNum((long) post.getComments().size())
-                .subCommentNum(getSubCommentNum(post.getComments()))
-                .likeNum((long) post.getLikes().size())
+                .commentsList(responseList)
+                .likeNum(Long.valueOf(post.getLikes().size()))
                 .createdAt(post.getCreatedAt())
                 .modifiedAt(post.getModifiedAt())
                 .build();
@@ -100,13 +134,6 @@ public class PostService {
         return ResponseDto.success(postRepository.findAllByMember(member));
     }
 
-    public Long getSubCommentNum(List<Comment> commentList) {
-        int result = 0;
-        for (Comment comment : commentList) {
-            result += comment.getSubComments().size();
-        }
-        return (long) result;
-    }
     @Transactional(readOnly = true)
     public Post isPresentPost(Long id){
         Optional<Post> optionalPost = postRepository.findById(id);

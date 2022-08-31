@@ -1,11 +1,14 @@
 package com.sparta.spring_team.service;
 
 import com.sparta.spring_team.dto.request.CommentRequestDto;
+import com.sparta.spring_team.dto.response.CommentMypageResponseDto;
 import com.sparta.spring_team.dto.response.CommentResponseDto;
 import com.sparta.spring_team.dto.response.ResponseDto;
+import com.sparta.spring_team.dto.response.SubCommentResponseDto;
 import com.sparta.spring_team.entity.Comment;
 import com.sparta.spring_team.entity.Member;
 import com.sparta.spring_team.entity.Post;
+import com.sparta.spring_team.entity.SubComment;
 import com.sparta.spring_team.repository.CommentRepository;
 import com.sparta.spring_team.shared.PublicMethod;
 import lombok.RequiredArgsConstructor;
@@ -59,21 +62,32 @@ public class CommentService {
 
         //댓글 목록
         List<CommentResponseDto> responseList = new ArrayList<>();
-        List<Comment> commentsList = commentRepository.findAllByPost(post);
+        List<Comment> comments = commentRepository.findAllByPost(post);
 
+        for (Comment comment : comments) {
+            //대댓글 목록
+            List<SubCommentResponseDto> subResponseList = new ArrayList<>();
+            List<SubComment> subComments = comment.getSubComments();
 
-
-        for (Comment comment : commentsList) {
-            //ResponseDto result = subCommentService.getAllSubCommentsByComment(comment.getId());
-
+            for(SubComment subComment : subComments){
+                subResponseList.add(SubCommentResponseDto.builder()
+                                .id(subComment.getId())
+                                .membername(subComment.getMember().getMembername())
+                                .content(subComment.getContent())
+                                .likeNum(Long.valueOf(subComment.getLikes().size()))
+                                .createdAt(comment.getCreatedAt())
+                                .modifiedAt(comment.getModifiedAt())
+                                .build()
+                );
+            }
 
             responseList.add(
                     CommentResponseDto.builder()
                             .id(comment.getId())
                             .membername(comment.getMember().getMembername())
                             .content(comment.getContent())
-                            .subCommentsList(comment.getSubComments())
-                            .likes(comment.getLikesNum())
+                            .subCommentsList(subResponseList)
+                            .likeNum(Long.valueOf(comment.getLikes().size()))
                             .createdAt(comment.getCreatedAt())
                             .modifiedAt(comment.getModifiedAt())
                             .build()
@@ -84,16 +98,15 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public ResponseDto<?> getAllCommentsByMember(Member member) {
-        List<CommentResponseDto> responseList = new ArrayList<>();
+        List<CommentMypageResponseDto> responseList = new ArrayList<>();
         List<Comment> commentsList= commentRepository.findAllByMember(member);
 
         for(Comment comment : commentsList){
-            responseList.add(CommentResponseDto.builder()
+            responseList.add(CommentMypageResponseDto.builder()
                             .id(comment.getId())
                             .membername(comment.getMember().getMembername())
                             .content(comment.getContent())
-                            .subCommentsList(comment.getSubComments())
-                            .likes(comment.getLikesNum())
+                            .likeNum(Long.valueOf(comment.getLikes().size()))
                             .createdAt(comment.getCreatedAt())
                             .modifiedAt(comment.getModifiedAt())
                             .build());
