@@ -67,16 +67,30 @@ public class PostService {
     @Transactional(readOnly = true)
     public ResponseDto<?> readAllPosts() {
         //T
+        List<SimplePostResponseDto> responseList = new ArrayList<>();
         List<Post> posts = postRepository.findAll();
-        PostListResponseDto postListResponseDto = new PostListResponseDto();
-        return ResponseDto.success(postListResponseDto.getPostList(posts));
+
+        for(Post post : posts){
+            responseList.add(SimplePostResponseDto.builder()
+                    .id(post.getId())
+                    .title(post.getTitle())
+                    .memberName(post.getMember().getMembername())
+                    .likeNum(Long.valueOf(post.getLikes().size()))
+                    .commentNum((Long.valueOf(post.getComments().size())))
+                    .createdAt(post.getCreatedAt())
+                    .modifiedAt(post.getModifiedAt())
+                    .build()
+            );
+        }
+
+        return ResponseDto.success(responseList);
     }
 
     @Transactional(readOnly = true)
     public ResponseDto<?> readPost(Long postid) {
         Optional<Post> postOptional = postRepository.findById(postid);
         if (postOptional.isEmpty()) {
-            return ResponseDto.fail("INVAILD_POST", "존재하지 않는 게시글 입니다");
+            return ResponseDto.fail("INVAILD_POST", "존재하지 않는 게시글 입니다.");
         }
         Post post = postOptional.get();
 
@@ -131,7 +145,43 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public ResponseDto<?> readAllPostsByMember(Member member){
-        return ResponseDto.success(postRepository.findAllByMember(member));
+        List<PostMypageResponseDto> responseList = new ArrayList<>();
+        List<Post> posts = postRepository.findAllByMember(member);
+
+        for(Post post : posts){
+            responseList.add(PostMypageResponseDto.builder()
+                    .id(post.getId())
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .imageUrl(post.getImageUrl())
+                    .likeNum(Long.valueOf(post.getLikes().size()))
+                    .createdAt(post.getCreatedAt())
+                    .modifiedAt(post.getModifiedAt())
+                    .build()
+            );
+        }
+
+        return ResponseDto.success(responseList);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getPostById(Long postid){
+        Optional<Post> postOptional = postRepository.findById(postid);
+        if (postOptional.isEmpty()) {
+            return ResponseDto.fail("INVAILD_POST", "존재하지 않는 게시글 입니다.");
+        }
+        Post post = postOptional.get();
+
+        return ResponseDto.success(PostLikeMypageResponseDto.builder()
+                .id(post.getId())
+                .membername(post.getMember().getMembername())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .imageUrl(post.getImageUrl())
+                .likeNum(Long.valueOf(post.getLikes().size()))
+                .createdAt(post.getCreatedAt())
+                .modifiedAt(post.getModifiedAt())
+                .build());
     }
 
     @Transactional(readOnly = true)

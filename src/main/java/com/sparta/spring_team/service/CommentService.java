@@ -1,10 +1,7 @@
 package com.sparta.spring_team.service;
 
 import com.sparta.spring_team.dto.request.CommentRequestDto;
-import com.sparta.spring_team.dto.response.CommentMypageResponseDto;
-import com.sparta.spring_team.dto.response.CommentResponseDto;
-import com.sparta.spring_team.dto.response.ResponseDto;
-import com.sparta.spring_team.dto.response.SubCommentResponseDto;
+import com.sparta.spring_team.dto.response.*;
 import com.sparta.spring_team.entity.Comment;
 import com.sparta.spring_team.entity.Member;
 import com.sparta.spring_team.entity.Post;
@@ -104,7 +101,6 @@ public class CommentService {
         for(Comment comment : commentsList){
             responseList.add(CommentMypageResponseDto.builder()
                             .id(comment.getId())
-                            .membername(comment.getMember().getMembername())
                             .content(comment.getContent())
                             .likeNum(Long.valueOf(comment.getLikes().size()))
                             .createdAt(comment.getCreatedAt())
@@ -113,6 +109,24 @@ public class CommentService {
         }
         //멤버 댓글 목록
         return ResponseDto.success(responseList);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getCommentById(Long commentId) {
+        Optional<Comment> commentOptional = commentRepository.findById(commentId);
+        if(commentOptional.isEmpty()){
+            return ResponseDto.fail("INVAILD_COMMENT", "존재하지 않는 댓글 입니다.");
+        }
+        Comment comment = commentOptional.get();
+
+        return ResponseDto.success(CommentLikeMypageResponseDto.builder()
+                .id(comment.getId())
+                .membername(comment.getMember().getMembername())
+                .content(comment.getContent())
+                .likeNum(Long.valueOf(comment.getLikes().size()))
+                .createdAt(comment.getCreatedAt())
+                .modifiedAt(comment.getModifiedAt())
+                .build());
     }
 
     @Transactional

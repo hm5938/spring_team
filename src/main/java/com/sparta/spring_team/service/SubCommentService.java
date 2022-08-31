@@ -1,6 +1,7 @@
 package com.sparta.spring_team.service;
 
 import com.sparta.spring_team.dto.request.SubCommentRequestDto;
+import com.sparta.spring_team.dto.response.CommentLikeMypageResponseDto;
 import com.sparta.spring_team.dto.response.ResponseDto;
 import com.sparta.spring_team.dto.response.SubCommentResponseDto;
 import com.sparta.spring_team.entity.Comment;
@@ -90,6 +91,24 @@ public class SubCommentService {
             );
         }
         return ResponseDto.success(responseList);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getSubCommentById(Long subCommentId) {
+        Optional<SubComment> subCommentOptional = subCommentRepository.findById(subCommentId);
+        if(subCommentOptional.isEmpty()){
+            return ResponseDto.fail("INVAILD_SUBCOMMENT", "존재하지 않는 대댓글 입니다.");
+        }
+        SubComment subComment = subCommentOptional.get();
+
+        return ResponseDto.success(CommentLikeMypageResponseDto.builder()
+                .id(subComment.getId())
+                .membername(subComment.getMember().getMembername())
+                .content(subComment.getContent())
+                .likeNum(Long.valueOf(subComment.getLikes().size()))
+                .createdAt(subComment.getCreatedAt())
+                .modifiedAt(subComment.getModifiedAt())
+                .build());
     }
 
     @Transactional
