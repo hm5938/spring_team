@@ -32,6 +32,7 @@ public class AwsS3Service {
         ResponseDto<?> result = publicMethod.checkLogin(request);
         if(!result.isSuccess()) return result;
 
+        if(multipartFile==null) return ResponseDto.fail("NULL_EXCEPTION","파일이 존재하지 않습니다.");
         String fileName = multipartFile.getOriginalFilename();
         String imagePath = "";
         ObjectMetadata objectMetadata = new ObjectMetadata();
