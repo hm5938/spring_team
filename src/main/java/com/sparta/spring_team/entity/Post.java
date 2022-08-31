@@ -33,7 +33,7 @@ public class Post extends Timestamped{
     @Column()
     private String imageUrl;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "post", cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<Comment> comments;
 
