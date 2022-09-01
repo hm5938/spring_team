@@ -156,7 +156,7 @@ public class CommentRequestDto {
     private String content;
 }
 ```
-    
+
 ```java
 public class SubCommentRequestDto {
     @NotBlank
@@ -166,7 +166,7 @@ public class SubCommentRequestDto {
 }
 ```
 **문제점 : CommentRequestDto 와 SubCommentRequestDto 에 Long 변수에 @NotBlank 어노테이션을 사용해서 발생한 문제<br/>**
-    
+
 ```java
 public class CommentRequestDto {
     @NotNull
@@ -175,7 +175,7 @@ public class CommentRequestDto {
     private String content;
 }
 ```
-    
+
 ```java
 public class SubCommentRequestDto {
     @NotNull
@@ -187,6 +187,60 @@ public class SubCommentRequestDto {
 **해결법 : @NotBlank 대신 @NotNull 어노테이션을 사용 (@NotBlank 는 String에 사용해야 적합)**<br/>
 참고사이트 : https://bepoz-study-diary.tistory.com/242
 
-  ***
+***
+<br/>
+
+> ### Comment Entity 에 getLikesNum 함수에서 likes 를 참조하려 할 때 Error가 발생
+```java
+public class Comment extends Timestamped{
+
+    ...
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private List<CommentLike> likes;
+
+    ...
+    
+    public int getLikesNum(){
+        int count = 0;
+
+        for(CommentLike like : likes){
+            if(like.getComment().equals(this)) ++count;
+        }
+
+        return count;
+    }
+}
+```
+**문제점 : likes 가 null일 경우 참조하려 해서 NullPointerException 발생<br/>**
+
+```java
+public class Comment extends Timestamped{
+
+    ...
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private List<CommentLike> likes;
+
+    ...
+    
+    public int getLikesNum(){
+        if(null == likes) return 0;
+    
+        int count = 0;
+
+        for(CommentLike like : likes){
+            if(like.getComment().equals(this)) ++count;
+        }
+
+        return count;
+    }
+}
+```
+**해결법 : null일 경우 예외처리를 추가해서 해결
+추가 사항 : 후에 수정사항에서 getLikesNum() 결국 
+    
 </details>
 
