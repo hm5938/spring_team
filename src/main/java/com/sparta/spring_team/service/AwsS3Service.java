@@ -6,18 +6,15 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import com.sparta.spring_team.dto.response.ResponseDto;
-import com.sparta.spring_team.shared.PublicMethod;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 
 import static com.sparta.spring_team.Exception.ErrorCode.FAIL_TO_UPLOAD;
-import static com.sparta.spring_team.Exception.ErrorCode.NULL_EXCEPTION;
 
 @RequiredArgsConstructor
 @Service
@@ -26,15 +23,12 @@ public class AwsS3Service {
     private String bucket;
 
     private final AmazonS3Client amazonS3Client;
-    private final PublicMethod publicMethod;
-
 
     @Transactional
-    public ResponseDto<?> uploadFile(MultipartFile multipartFile, HttpServletRequest request){
-        ResponseDto<?> result = publicMethod.checkLogin(request);
-        if(!result.isSuccess()) return result;
+    public ResponseDto<?> uploadFile(MultipartFile multipartFile){
+        //System.out.println(multipartFile);
+        //if(multipartFile.isEmpty()) return ResponseDto.fail(NULL_EXCEPTION);
 
-        if(multipartFile==null) return ResponseDto.fail(NULL_EXCEPTION);
         String fileName = multipartFile.getOriginalFilename();
         String imagePath = "";
         ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -45,7 +39,6 @@ public class AwsS3Service {
             amazonS3Client.putObject(new PutObjectRequest(bucket,fileName,inputStream,objectMetadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
             imagePath = String.valueOf(amazonS3Client.getUrl(bucket,fileName));
-
         } catch (Exception e) {
 //            throw new RuntimeException(e);
             return ResponseDto.fail(FAIL_TO_UPLOAD);
@@ -53,7 +46,5 @@ public class AwsS3Service {
 
         return ResponseDto.success(imagePath);
     }
-
-
 
 }

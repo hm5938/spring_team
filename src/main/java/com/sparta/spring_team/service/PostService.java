@@ -12,6 +12,7 @@ import com.sparta.spring_team.shared.PublicMethod;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -26,12 +27,27 @@ import static com.sparta.spring_team.Exception.ErrorCode.*;
 public class PostService {
     private final PostRepository postRepository;
     private final PublicMethod publicMethod;
+    private final AwsS3Service imageUploader;
 
     @Transactional
     public ResponseDto<?> createPost(PostRequestDto requestDto, HttpServletRequest request) {
         ResponseDto<?> result = publicMethod.checkLogin(request);
         if (!result.isSuccess()) return result;
         Member member = (Member) result.getData();
+
+        Post post = postRepository.save(new Post(requestDto, member));
+        return ResponseDto.success(post);
+    }
+
+    @Transactional
+    public ResponseDto<?> createPost(PostRequestDto requestDto, MultipartFile multipartFile, HttpServletRequest request) {
+        ResponseDto<?> result = publicMethod.checkLogin(request);
+        if (!result.isSuccess()) return result;
+        Member member = (Member) result.getData();
+
+        String imageUrl = (String)imageUploader.uploadFile(multipartFile).getData();
+        requestDto.setImageUrl(imageUrl);
+
         Post post = postRepository.save(new Post(requestDto, member));
         return ResponseDto.success(post);
     }
