@@ -239,7 +239,7 @@ public class Comment extends Timestamped{
     }
 }
 ```
-**해결법 : null일 경우 예외처리를 추가해서 해결
+**해결법 : null일 경우 예외처리를 추가해서 해결** <br/>
 추가 사항 : 후에 수정사항에서 getLikesNum() 결국 
     
 </details>
