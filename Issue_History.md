@@ -140,3 +140,53 @@ public class RefreshToken extends Timestamped {
   ***
 </details>
 
+
+
+<details>
+<summary>22.08.31</summary>
+
+<!-- summary 아래 한칸 공백 두어야함 -->
+###   
+> ### Comment 또는 SubComment 를 작성하려고 할 때, 500 server internal error 발생
+```java
+public class CommentRequestDto {
+    @NotBlank
+    private Long postId;
+    @NotBlank
+    private String content;
+}
+```
+    
+```java
+public class SubCommentRequestDto {
+    @NotBlank
+    private Long commentId;
+    @NotBlank
+    private String content;
+}
+```
+**문제점 : CommentRequestDto 와 SubCommentRequestDto 에 Long 변수에 @NotBlank 어노테이션을 사용해서 발생한 문제<br/>**
+    
+```java
+public class CommentRequestDto {
+    @NotNull
+    private Long postId;
+    @NotBlank
+    private String content;
+}
+```
+    
+```java
+public class SubCommentRequestDto {
+    @NotNull
+    private Long commentId;
+    @NotBlank
+    private String content;
+}
+```
+**해결법 : @NotBlank 대신 @NotNull 어노테이션을 사용 (@NotBlank 는 String에 사용해야 적합)**<br/>
+참고사이트 : https://bepoz-study-diary.tistory.com/242
+
+  ***
+</details>
+
