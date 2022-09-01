@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+
+import static com.sparta.spring_team.Exception.ErrorCode.*;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -18,16 +21,16 @@ public class PublicMethod {
     @Transactional
     public ResponseDto<?> checkLogin(HttpServletRequest request){
         if (null == request.getHeader("Refresh-Token")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND", "로그인이 필요합니다.");
+            return ResponseDto.fail(INVALID_LOGIN);
         }
 
         if (null == request.getHeader("Authorization")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND", "로그인이 필요합니다.");
+            return ResponseDto.fail(INVALID_LOGIN);
         }
 
         Member member = validateMember(request);
         if (null == member) {
-            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
+            return ResponseDto.fail(INVALID_TOKEN);
         }
 
         return ResponseDto.success(member);

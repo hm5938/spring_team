@@ -1,5 +1,6 @@
 package com.sparta.spring_team.dto.response;
 
+import com.sparta.spring_team.Exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,14 +9,14 @@ import lombok.Getter;
 public class ResponseDto<T> {
     private boolean success;
     private T data;
-    private Error error;
+    private ErrorCode error;
 
     public static <T> ResponseDto<T> success(T data) {
         return new ResponseDto<>(true, data, null);
     }
 
-    public static <T> ResponseDto<T> fail(String code, String message) {
-        return new ResponseDto<>(false, null, new Error(code, message));
+    public static <T> ResponseDto<T> fail(ErrorCode code) {
+        return new ResponseDto<>(false, null, code);
     }
 
 

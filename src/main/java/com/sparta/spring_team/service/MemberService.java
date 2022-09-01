@@ -8,6 +8,7 @@ import com.sparta.spring_team.dto.request.TokenDto;
 import com.sparta.spring_team.entity.Member;
 import com.sparta.spring_team.jwt.TokenProvider;
 import com.sparta.spring_team.repository.MemberRepository;
+import com.sparta.spring_team.shared.PublicMethod;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.sparta.spring_team.Exception.ErrorCode.*;
+
 @RequiredArgsConstructor
 @Service
 public class MemberService {
@@ -27,6 +30,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
 
+    private final PublicMethod publicMethod;
     private final PostService postService;
     private final CommentService commentService;
     private final SubCommentService subCommentService;
@@ -35,13 +39,11 @@ public class MemberService {
     @Transactional
     public ResponseDto<?> createMember(MemberRequestDto requestDto) {
         if (null != isPresentMember(requestDto.getMembername())) {
-            return ResponseDto.fail("DUPLICATED_NICKNAME",
-                    "중복된 닉네임 입니다.");
+            return ResponseDto.fail(DUPLICATE_MEMBERNAME);
         }
 
         if (!requestDto.getPassword().equals(requestDto.getPasswordConfirm())) {
-            return ResponseDto.fail("PASSWORDS_NOT_MATCHED",
-                    "비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+            return ResponseDto.fail(PASSWORDS_NOT_MATCHED);
         }
 
         Member member = Member.builder()
@@ -63,12 +65,11 @@ public class MemberService {
     public ResponseDto<?> login(LoginRequestDto requestDto, HttpServletResponse response) {
         Member member = isPresentMember(requestDto.getMembername());
         if (null == member) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND",
-                    "사용자를 찾을 수 없습니다.");
+            return ResponseDto.fail(MEMBER_NOT_FOUND);
         }
 
         if (!member.validatePassword(passwordEncoder, requestDto.getPassword())) {
-            return ResponseDto.fail("INVALID_MEMBER", "사용자를 찾을 수 없습니다.");
+            return ResponseDto.fail(MEMBER_NOT_FOUND);
         }
 
 //    UsernamePasswordAuthenticationToken authenticationToken =
@@ -114,28 +115,18 @@ public class MemberService {
 
     @Transactional
     public ResponseDto<?> logout(HttpServletRequest request) {
-        if (!tokenProvider.validateToken(request.getHeader("Refresh-Token"))) {
-            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
-        }
-        Member member = tokenProvider.getMemberFromAuthentication();
-        if (null == member) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND",
-                    "사용자를 찾을 수 없습니다.");
-        }
+        ResponseDto<?> result = publicMethod.checkLogin(request);
+        if(!result.isSuccess()) return result;
+        Member member = (Member) result.getData();
 
         return tokenProvider.deleteRefreshToken(member);
     }
 
     @Transactional(readOnly = true)
     public ResponseDto<?> mypage(HttpServletRequest request){
-        if (!tokenProvider.validateToken(request.getHeader("Refresh-Token"))) {
-            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
-        }
-        Member member = tokenProvider.getMemberFromAuthentication();
-        if (null == member) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND",
-                    "사용자를 찾을 수 없습니다.");
-        }
+        ResponseDto<?> result = publicMethod.checkLogin(request);
+        if(!result.isSuccess()) return result;
+        Member member = (Member) result.getData();
 
         List<ResponseDto> responseList = new ArrayList<>();
 

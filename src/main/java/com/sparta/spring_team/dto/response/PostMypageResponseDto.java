@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class PostMypageResponseDto {
     private Long id;
+    private String membername;
     private String title;
     private String content;
     private String imageUrl;

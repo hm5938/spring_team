@@ -1,9 +1,9 @@
 package com.sparta.spring_team.service;
 
 import com.sparta.spring_team.dto.request.LikeRequestDto;
-import com.sparta.spring_team.dto.response.CommentLikeMypageResponseDto;
+import com.sparta.spring_team.dto.response.CommentMypageResponseDto;
 import com.sparta.spring_team.dto.response.LikeResponseDto;
-import com.sparta.spring_team.dto.response.PostLikeMypageResponseDto;
+import com.sparta.spring_team.dto.response.PostMypageResponseDto;
 import com.sparta.spring_team.dto.response.ResponseDto;
 import com.sparta.spring_team.entity.*;
 import com.sparta.spring_team.repository.likerepository.CommentLikeRepository;
@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.sparta.spring_team.Exception.ErrorCode.*;
 
 @RequiredArgsConstructor
 @Service
@@ -44,11 +46,11 @@ public class LikeService {
             case POST:
                 Post post = postService.isPresentPost(requestDto.getId());
                 if (null == post) {
-                    return ResponseDto.fail("NOT_FOUND", "존재하지 않는 게시글 입니다.");
+                    return ResponseDto.fail(INVALID_POST);
                 }
                 Optional<PostLike> postLike = postLikeRepository.findByPostAndMember(post, member);
 
-                if(postLike.isPresent()) return ResponseDto.fail("DUPLICATE_LIKES", "이미 좋아요를 눌렀습니다");
+                if(postLike.isPresent()) return ResponseDto.fail(DUPLICATE_LIKES);
 
                 //저장
                 PostLike postLikeObject = PostLike.builder()
@@ -67,11 +69,11 @@ public class LikeService {
             case COMMENT:
                 Comment comment = commentService.isPresentComment(requestDto.getId());
                 if (null == comment) {
-                    return ResponseDto.fail("NOT_FOUND", "존재하지 않는 댓글 입니다.");
+                    return ResponseDto.fail(INVALID_COMMENT);
                 }
                 Optional<CommentLike> commentLike = commentLikeRepository.findByCommentAndMember(comment, member);
 
-                if(commentLike.isPresent()) return ResponseDto.fail("DUPLICATE_LIKES", "이미 좋아요를 눌렀습니다");
+                if(commentLike.isPresent()) return ResponseDto.fail(DUPLICATE_LIKES);
 
                 //저장
                 CommentLike commentLikeObject = CommentLike.builder()
@@ -90,11 +92,11 @@ public class LikeService {
             case SUBCOMMENT:
                 SubComment subComment = subCommentService.isPresentSubComment(requestDto.getId());
                 if (null == subComment) {
-                    return ResponseDto.fail("NOT_FOUND", "존재하지 않는 대댓글 입니다.");
+                    return ResponseDto.fail(INVALID_SUBCOMMENT);
                 }
                 Optional<SubCommentLike> subCommentLike = subCommentLikeRepository.findBySubcommentAndMember(subComment, member);
 
-                if(subCommentLike.isPresent()) return ResponseDto.fail("DUPLICATE_LIKES", "이미 좋아요를 눌렀습니다");
+                if(subCommentLike.isPresent()) return ResponseDto.fail(DUPLICATE_LIKES);
 
                 //저장
                 SubCommentLike subCommentLikeObject = SubCommentLike.builder()
@@ -111,7 +113,7 @@ public class LikeService {
                         .build());
 
             default:
-                return ResponseDto.fail("WRONG_DATA", "데이터가 잘못되었습니다.");
+                return ResponseDto.fail(WRONG_DATA);
         }
 
     }
@@ -126,7 +128,7 @@ public class LikeService {
             case POST:
                 Post post = postService.isPresentPost(requestDto.getId());
                 if (null == post) {
-                    return ResponseDto.fail("NOT_FOUND", "존재하지 않는 게시글 입니다.");
+                    return ResponseDto.fail(INVALID_POST);
                 }
                 Optional<PostLike> postLike = postLikeRepository.findByPostAndMember(post, member);
 
@@ -134,12 +136,12 @@ public class LikeService {
                     postLikeRepository.delete(postLike.get());
                     return ResponseDto.success("success delete like");
                 }
-                return ResponseDto.fail("INVAILD_LIKES", "좋아요를 누르지 않았습니다.");
+                return ResponseDto.fail(INVALID_LIKES);
 
             case COMMENT:
                 Comment comment = commentService.isPresentComment(requestDto.getId());
                 if (null == comment) {
-                    return ResponseDto.fail("NOT_FOUND", "존재하지 않는 댓글 입니다.");
+                    return ResponseDto.fail(INVALID_COMMENT);
                 }
                 Optional<CommentLike> commentLike = commentLikeRepository.findByCommentAndMember(comment, member);
 
@@ -147,12 +149,12 @@ public class LikeService {
                     commentLikeRepository.delete(commentLike.get());
                     return ResponseDto.success("success delete like");
                 }
-                return ResponseDto.fail("INVAILD_LIKES", "좋아요를 누르지 않았습니다.");
+                return ResponseDto.fail(INVALID_LIKES);
 
             case SUBCOMMENT:
                 SubComment subComment = subCommentService.isPresentSubComment(requestDto.getId());
                 if (null == subComment) {
-                    return ResponseDto.fail("NOT_FOUND", "존재하지 않는 대댓글 입니다.");
+                    return ResponseDto.fail(INVALID_SUBCOMMENT);
                 }
                 Optional<SubCommentLike> subCommentLike = subCommentLikeRepository.findBySubcommentAndMember(subComment, member);
 
@@ -160,21 +162,21 @@ public class LikeService {
                     subCommentLikeRepository.delete(subCommentLike.get());
                     return ResponseDto.success("success delete like");
                 }
-                return ResponseDto.fail("INVAILD_LIKES", "좋아요를 누르지 않았습니다.");
+                return ResponseDto.fail(INVALID_LIKES);
 
             default:
-                return ResponseDto.fail("WRONG_DATA", "데이터가 잘못되었습니다.");
+                return ResponseDto.fail(WRONG_DATA);
         }
     }
 
     @Transactional(readOnly = true)
     public ResponseDto<?> getAllPostLikesByMember(Member member){
-        List<PostLikeMypageResponseDto> responseList = new ArrayList<>();
+        List<PostMypageResponseDto> responseList = new ArrayList<>();
         List<PostLike> postLikes = postLikeRepository.findAllByMember(member);
 
         for(PostLike postLike : postLikes){
             ResponseDto postResponse = postService.getPostById(postLike.getPost().getId());
-            PostLikeMypageResponseDto data = (PostLikeMypageResponseDto)postResponse.getData();
+            PostMypageResponseDto data = (PostMypageResponseDto)postResponse.getData();
             responseList.add(data);
         }
 
@@ -183,12 +185,12 @@ public class LikeService {
 
     @Transactional(readOnly = true)
     public ResponseDto<?> getAllCommentLikesByMember(Member member){
-        List<CommentLikeMypageResponseDto> responseList = new ArrayList<>();
+        List<CommentMypageResponseDto> responseList = new ArrayList<>();
         List<CommentLike> commentLikes = commentLikeRepository.findAllByMember(member);
 
         for(CommentLike commentLike : commentLikes){
             ResponseDto commentResponse = commentService.getCommentById(commentLike.getComment().getId());
-            CommentLikeMypageResponseDto data = (CommentLikeMypageResponseDto)commentResponse.getData();
+            CommentMypageResponseDto data = (CommentMypageResponseDto)commentResponse.getData();
             responseList.add(data);
         }
 
@@ -197,12 +199,12 @@ public class LikeService {
 
     @Transactional(readOnly = true)
     public ResponseDto<?> getAllSubCommentLikesByMember(Member member){
-        List<CommentLikeMypageResponseDto> responseList = new ArrayList<>();
+        List<CommentMypageResponseDto> responseList = new ArrayList<>();
         List<SubCommentLike> subCommentLikes = subCommentLikeRepository.findAllByMember(member);
 
         for(SubCommentLike subCommentLike : subCommentLikes){
             ResponseDto subCommentResponse = subCommentService.getSubCommentById(subCommentLike.getSubcomment().getId());
-            CommentLikeMypageResponseDto data = (CommentLikeMypageResponseDto)subCommentResponse.getData();
+            CommentMypageResponseDto data = (CommentMypageResponseDto)subCommentResponse.getData();
             responseList.add(data);
         }
 

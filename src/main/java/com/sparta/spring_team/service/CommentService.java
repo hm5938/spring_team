@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.sparta.spring_team.Exception.ErrorCode.*;
+
 @RequiredArgsConstructor
 @Service
 public class CommentService {
@@ -36,7 +38,7 @@ public class CommentService {
         //포스트
         Post post = postService.isPresentPost(requestDto.getPostId());
         if (null == post) {
-            return ResponseDto.fail("NOT_FOUND", "존재하지 않는 게시글입니다.");
+            return ResponseDto.fail(INVALID_POST);
         }
 
         Comment comment = Comment.builder()
@@ -54,7 +56,7 @@ public class CommentService {
         //포스트
         Post post = postService.isPresentPost(postId);
         if (null == post) {
-            return ResponseDto.fail("NOT_FOUND", "존재하지 않는 게시글입니다.");
+            return ResponseDto.fail(INVALID_POST);
         }
 
         //댓글 목록
@@ -101,6 +103,7 @@ public class CommentService {
         for(Comment comment : commentsList){
             responseList.add(CommentMypageResponseDto.builder()
                             .id(comment.getId())
+                            .membername(member.getMembername())
                             .content(comment.getContent())
                             .likeNum(Long.valueOf(comment.getLikes().size()))
                             .createdAt(comment.getCreatedAt())
@@ -115,11 +118,11 @@ public class CommentService {
     public ResponseDto<?> getCommentById(Long commentId) {
         Optional<Comment> commentOptional = commentRepository.findById(commentId);
         if(commentOptional.isEmpty()){
-            return ResponseDto.fail("INVAILD_COMMENT", "존재하지 않는 댓글 입니다.");
+            return ResponseDto.fail(INVALID_COMMENT);
         }
         Comment comment = commentOptional.get();
 
-        return ResponseDto.success(CommentLikeMypageResponseDto.builder()
+        return ResponseDto.success(CommentMypageResponseDto.builder()
                 .id(comment.getId())
                 .membername(comment.getMember().getMembername())
                 .content(comment.getContent())
@@ -138,11 +141,11 @@ public class CommentService {
 
         Comment comment = isPresentComment(id);
         if (null == comment) {
-            return ResponseDto.fail("NOT_FOUND", "존재하지 않는 댓글 입니다.");
+            return ResponseDto.fail(INVALID_COMMENT);
         }
 
         if (comment.validateMember(member)) {
-            return ResponseDto.fail("BAD_REQUEST", "작성자만 수정할 수 있습니다.");
+            return ResponseDto.fail(NO_AUTHORIZATION);
         }
 
         return ResponseDto.success(comment.update(requestDto));
@@ -157,11 +160,11 @@ public class CommentService {
 
         Comment comment = isPresentComment(id);
         if (null == comment) {
-            return ResponseDto.fail("NOT_FOUND", "존재하지 않는 댓글 입니다.");
+            return ResponseDto.fail(INVALID_COMMENT);
         }
 
         if (comment.validateMember(member)) {
-            return ResponseDto.fail("BAD_REQUEST", "작성자만 삭제할 수 있습니다.");
+            return ResponseDto.fail(NO_AUTHORIZATION);
         }
 
         commentRepository.delete(comment);
