@@ -4,11 +4,9 @@ package com.sparta.spring_team.controller;
 import com.sparta.spring_team.service.PostService;
 import com.sparta.spring_team.dto.request.PostRequestDto;
 import com.sparta.spring_team.dto.response.ResponseDto;
-import com.sparta.spring_team.entity.Member;
-import com.sparta.spring_team.entity.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -20,9 +18,16 @@ public class PostController {
 
  private final PostService postService;
 
+//    @RequestMapping(value = "/auth/posts", method = RequestMethod.POST)
+//    public ResponseDto<?> createPost(@RequestBody @Valid PostRequestDto requestDto, HttpServletRequest request) {
+//            return postService.createPost(requestDto, request);
+//    }
+
     @RequestMapping(value = "/auth/posts", method = RequestMethod.POST)
-    public ResponseDto<?> createPost(@RequestBody @Valid PostRequestDto requestDto,HttpServletRequest request) {
-            return postService.createPost(requestDto, request);
+    public ResponseDto<?> createPost(@RequestPart PostRequestDto requestDto,
+                                     @RequestPart(required = false) MultipartFile multipartFile, HttpServletRequest request) {
+        if(null == multipartFile) return postService.createPost(requestDto, request);
+        return postService.createPost(requestDto, multipartFile, request);
     }
 
     @RequestMapping(value = "/auth/posts/{postid}", method = RequestMethod.PUT )
