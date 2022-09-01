@@ -1,13 +1,9 @@
 package com.sparta.spring_team.controller;
 
-import com.sparta.spring_team.dto.request.CommentRequestDto;
 import com.sparta.spring_team.dto.request.SubCommentRequestDto;
 import com.sparta.spring_team.dto.response.ResponseDto;
-import com.sparta.spring_team.entity.Member;
-import com.sparta.spring_team.entity.UserDetailsImpl;
 import com.sparta.spring_team.service.SubCommentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,18 +21,18 @@ public class SubCommentController {
         return subCommentService.createSubComment(requestDto, request);
     }
 
-    @RequestMapping(value = "/subcomment", method = RequestMethod.GET)
-    public ResponseDto<?> getAllSubComments(@PathVariable Long id){ return subCommentService.getAllSubCommentsByComment(id); }
+    @RequestMapping(value = "/subcomment/{commentid}", method = RequestMethod.GET)
+    public ResponseDto<?> getAllSubComments(@PathVariable Long commentid){ return subCommentService.getAllSubCommentsByComment(commentid); }
 
-    @RequestMapping(value = "/auth/subcomment/{id}", method = RequestMethod.PUT)
-    public ResponseDto<?> updateSubComment(@PathVariable Long id, @RequestBody @Valid SubCommentRequestDto requestDto,
+    @RequestMapping(value = "/auth/subcomment/{subcommentid}", method = RequestMethod.PUT)
+    public ResponseDto<?> updateSubComment(@PathVariable Long subcommentid, @RequestBody @Valid SubCommentRequestDto requestDto,
                                         HttpServletRequest request){
-        return subCommentService.updateSubComment(id, requestDto, request);
+        return subCommentService.updateSubComment(subcommentid, requestDto, request);
     }
 
-    @RequestMapping(value = "/auth/subcomment/{id}", method = RequestMethod.DELETE)
-    public ResponseDto<?> deleteSubComment(@PathVariable Long id, HttpServletRequest request){
-        return subCommentService.deleteSubComment(id, request);
+    @RequestMapping(value = "/auth/subcomment/{subcommentid}", method = RequestMethod.DELETE)
+    public ResponseDto<?> deleteSubComment(@PathVariable Long subcommentid, HttpServletRequest request){
+        return subCommentService.deleteSubComment(subcommentid, request);
     }
 }
 

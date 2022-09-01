@@ -1,7 +1,7 @@
 package com.sparta.spring_team.service;
 
 import com.sparta.spring_team.dto.request.SubCommentRequestDto;
-import com.sparta.spring_team.dto.response.CommentLikeMypageResponseDto;
+import com.sparta.spring_team.dto.response.CommentMypageResponseDto;
 import com.sparta.spring_team.dto.response.ResponseDto;
 import com.sparta.spring_team.dto.response.SubCommentResponseDto;
 import com.sparta.spring_team.entity.Comment;
@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.sparta.spring_team.Exception.ErrorCode.*;
 
 @RequiredArgsConstructor
 @Service
@@ -34,7 +36,7 @@ public class SubCommentService {
 
         Comment comment = commentService.isPresentComment(requestDto.getCommentId());
         if (null == comment) {
-            return ResponseDto.fail("NOT_FOUND", "존재하지 않는 댓글입니다.");
+            return ResponseDto.fail(INVALID_COMMENT);
         }
 
         SubComment subComment = SubComment.builder()
@@ -50,7 +52,7 @@ public class SubCommentService {
     public ResponseDto<?> getAllSubCommentsByComment(Long commentId){
         Comment comment = commentService.isPresentComment(commentId);
         if (null == comment) {
-            return ResponseDto.fail("NOT_FOUND", "존재하지 않는 댓글입니다.");
+            return ResponseDto.fail(INVALID_COMMENT);
         }
 
         //댓글 목록
@@ -97,11 +99,11 @@ public class SubCommentService {
     public ResponseDto<?> getSubCommentById(Long subCommentId) {
         Optional<SubComment> subCommentOptional = subCommentRepository.findById(subCommentId);
         if(subCommentOptional.isEmpty()){
-            return ResponseDto.fail("INVAILD_SUBCOMMENT", "존재하지 않는 대댓글 입니다.");
+            return ResponseDto.fail(INVALID_SUBCOMMENT);
         }
         SubComment subComment = subCommentOptional.get();
 
-        return ResponseDto.success(CommentLikeMypageResponseDto.builder()
+        return ResponseDto.success(CommentMypageResponseDto.builder()
                 .id(subComment.getId())
                 .membername(subComment.getMember().getMembername())
                 .content(subComment.getContent())
@@ -120,11 +122,11 @@ public class SubCommentService {
 
         SubComment subComment = isPresentSubComment(id);
         if (null == subComment) {
-            return ResponseDto.fail("NOT_FOUND", "존재하지 않는 대댓글입니다.");
+            return ResponseDto.fail(INVALID_SUBCOMMENT);
         }
 
         if (subComment.validateMember(member)) {
-            return ResponseDto.fail("BAD_REQUEST", "작성자만 수정할 수 있습니다.");
+            return ResponseDto.fail(NO_AUTHORIZATION);
         }
 
         return ResponseDto.success(subComment.update(requestDto));
@@ -139,11 +141,11 @@ public class SubCommentService {
 
         SubComment subComment = isPresentSubComment(id);
         if (null == subComment) {
-            return ResponseDto.fail("NOT_FOUND", "존재하지 않는 대댓글입니다.");
+            return ResponseDto.fail(INVALID_SUBCOMMENT);
         }
 
         if (subComment.validateMember(member)) {
-            return ResponseDto.fail("BAD_REQUEST", "작성자만 수정할 수 있습니다.");
+            return ResponseDto.fail(NO_AUTHORIZATION);
         }
 
         subCommentRepository.delete(subComment);

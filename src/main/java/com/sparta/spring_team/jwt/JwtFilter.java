@@ -29,6 +29,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import static com.sparta.spring_team.Exception.ErrorCode.INVALID_TOKEN;
+
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
@@ -65,7 +67,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 response.setContentType("application/json;charset=UTF-8");
                 response.getWriter().println(
                         new ObjectMapper().writeValueAsString(
-                                ResponseDto.fail("BAD_REQUEST", "Token이 유효햐지 않습니다.")
+                                ResponseDto.fail(INVALID_TOKEN)
                         )
                 );
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

@@ -20,20 +20,20 @@ public class CommentController {
         return commentService.createComment(requestDto, request);
     }
 
-    @RequestMapping(value = "/comment/{id}", method = RequestMethod.GET)
-    public ResponseDto<?> getAllComments(@PathVariable Long id){
-        return commentService.getAllCommentsByPost(id);
+    @RequestMapping(value = "/comment/{postid}", method = RequestMethod.GET)
+    public ResponseDto<?> getAllComments(@PathVariable Long postid){
+        return commentService.getAllCommentsByPost(postid);
     }
 
-    @RequestMapping(value = "/auth/comment/{id}", method = RequestMethod.PUT)
-    public ResponseDto<?> updateComment(@PathVariable Long id, @RequestBody @Valid CommentRequestDto requestDto,
+    @RequestMapping(value = "/auth/comment/{commentid}", method = RequestMethod.PUT)
+    public ResponseDto<?> updateComment(@PathVariable Long commentid, @RequestBody @Valid CommentRequestDto requestDto,
                                         HttpServletRequest request){
-        return commentService.updateComment(id, requestDto, request);
+        return commentService.updateComment(commentid, requestDto, request);
     }
 
-    @RequestMapping(value = "/auth/comment/{id}", method = RequestMethod.DELETE)
-    public ResponseDto<?> deleteComment(@PathVariable Long id, HttpServletRequest request){
-        return commentService.deleteComment(id, request);
+    @RequestMapping(value = "/auth/comment/{commentid}", method = RequestMethod.DELETE)
+    public ResponseDto<?> deleteComment(@PathVariable Long commentid, HttpServletRequest request){
+        return commentService.deleteComment(commentid, request);
     }
 
 }

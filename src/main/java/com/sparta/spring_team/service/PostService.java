@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.sparta.spring_team.Exception.ErrorCode.*;
+
 
 @RequiredArgsConstructor
 @Service
@@ -28,49 +30,51 @@ public class PostService {
     @Transactional
     public ResponseDto<?> createPost(PostRequestDto requestDto, HttpServletRequest request) {
         ResponseDto<?> result = publicMethod.checkLogin(request);
-        if(!result.isSuccess()) return result;
+        if (!result.isSuccess()) return result;
         Member member = (Member) result.getData();
-        Post post =postRepository.save(new Post(requestDto, member));
+        Post post = postRepository.save(new Post(requestDto, member));
         return ResponseDto.success(post);
     }
+
     @Transactional
-    public ResponseDto<?> updatePost(Long postid,PostRequestDto requestDto, HttpServletRequest request) {
+    public ResponseDto<?> updatePost(Long postid, PostRequestDto requestDto, HttpServletRequest request) {
         ResponseDto<?> result = publicMethod.checkLogin(request);
-        if(!result.isSuccess()) return result;
+        if (!result.isSuccess()) return result;
         Member member = (Member) result.getData();
         Optional<Post> postOptional = postRepository.findById(postid);
-        if(postOptional.isEmpty()){
-            return ResponseDto.fail("INVAILD_POST","존재하기 않는 게시글 입니다");
-        }else if(!postOptional.get().getMember().equals(member)){
-            return ResponseDto.fail("NOT_POSTING_USER","게시글 작성자가 아닙니다.");
+        if (postOptional.isEmpty()) {
+            return ResponseDto.fail(INVALID_POST);
+        } else if (!postOptional.get().getMember().equals(member)) {
+            return ResponseDto.fail(NO_AUTHORIZATION);
         }
         Post post = postOptional.get();
         return ResponseDto.success(post.update(requestDto));
     }
 
     @Transactional
-    public ResponseDto<?> deletePost(Long postid, HttpServletRequest request){
+    public ResponseDto<?> deletePost(Long postid, HttpServletRequest request) {
         ResponseDto<?> result = publicMethod.checkLogin(request);
-        if(!result.isSuccess()) return result;
+        if (!result.isSuccess()) return result;
         Member member = (Member) result.getData();
 
         Optional<Post> postOptional = postRepository.findById(postid);
-        if(postOptional.isEmpty()){
-            return ResponseDto.fail("INVAILD_POST","존재하기 않는 게시글 입니다");
-        }else if(!postOptional.get().getMember().equals(member)){
-            return ResponseDto.fail("NOT_POSTING_USER","게시글 작성자가 아닙니다.");
+        if (postOptional.isEmpty()) {
+            return ResponseDto.fail(INVALID_POST);
+        } else if (!postOptional.get().getMember().equals(member)) {
+            return ResponseDto.fail(NO_AUTHORIZATION);
         }
         Post post = postOptional.get();
         postRepository.delete(post);
-        return ResponseDto.success("delete post id "+postid);
+        return ResponseDto.success("delete post id " + postid);
     }
+
     @Transactional(readOnly = true)
     public ResponseDto<?> readAllPosts() {
         //T
         List<SimplePostResponseDto> responseList = new ArrayList<>();
         List<Post> posts = postRepository.findAll();
 
-        for(Post post : posts){
+        for (Post post : posts) {
             responseList.add(SimplePostResponseDto.builder()
                     .id(post.getId())
                     .title(post.getTitle())
@@ -90,7 +94,7 @@ public class PostService {
     public ResponseDto<?> readPost(Long postid) {
         Optional<Post> postOptional = postRepository.findById(postid);
         if (postOptional.isEmpty()) {
-            return ResponseDto.fail("INVAILD_POST", "존재하지 않는 게시글 입니다.");
+            return ResponseDto.fail(INVALID_POST);
         }
         Post post = postOptional.get();
 
@@ -103,7 +107,7 @@ public class PostService {
             List<SubCommentResponseDto> subResponseList = new ArrayList<>();
             List<SubComment> subComments = comment.getSubComments();
 
-            for(SubComment subComment : subComments){
+            for (SubComment subComment : subComments) {
                 subResponseList.add(SubCommentResponseDto.builder()
                         .id(subComment.getId())
                         .membername(subComment.getMember().getMembername())
@@ -144,13 +148,14 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<?> readAllPostsByMember(Member member){
+    public ResponseDto<?> readAllPostsByMember(Member member) {
         List<PostMypageResponseDto> responseList = new ArrayList<>();
         List<Post> posts = postRepository.findAllByMember(member);
 
-        for(Post post : posts){
+        for (Post post : posts) {
             responseList.add(PostMypageResponseDto.builder()
                     .id(post.getId())
+                    .membername(member.getMembername())
                     .title(post.getTitle())
                     .content(post.getContent())
                     .imageUrl(post.getImageUrl())
@@ -165,14 +170,14 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseDto<?> getPostById(Long postid){
+    public ResponseDto<?> getPostById(Long postid) {
         Optional<Post> postOptional = postRepository.findById(postid);
         if (postOptional.isEmpty()) {
-            return ResponseDto.fail("INVAILD_POST", "존재하지 않는 게시글 입니다.");
+            return ResponseDto.fail(INVALID_POST);
         }
         Post post = postOptional.get();
 
-        return ResponseDto.success(PostLikeMypageResponseDto.builder()
+        return ResponseDto.success(PostMypageResponseDto.builder()
                 .id(post.getId())
                 .membername(post.getMember().getMembername())
                 .title(post.getTitle())
@@ -185,7 +190,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Post isPresentPost(Long id){
+    public Post isPresentPost(Long id) {
         Optional<Post> optionalPost = postRepository.findById(id);
         return optionalPost.orElse(null);
     }

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static com.sparta.spring_team.Exception.ErrorCode.INVALID_LOGIN;
+
 //JWT토큰 인증시 예외발생할 때의 처리
 @Component
 public class AuthenticationEntryPointException implements
@@ -21,7 +23,7 @@ public class AuthenticationEntryPointException implements
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().println(
                 new ObjectMapper().writeValueAsString(
-                        ResponseDto.fail("BAD_REQUEST", "로그인이 필요합니다.")
+                        ResponseDto.fail(INVALID_LOGIN)
                 )
         );
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CommentMypageResponseDto {
     private Long id;
+    private String membername;
     private String content;
     private Long likeNum;
 

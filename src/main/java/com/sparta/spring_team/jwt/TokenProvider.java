@@ -27,6 +27,8 @@ import java.security.Key;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.sparta.spring_team.Exception.ErrorCode.INVALID_TOKEN;
+
 @Slf4j
 @Component
 public class TokenProvider {
@@ -144,7 +146,7 @@ public class TokenProvider {
     public ResponseDto<?> deleteRefreshToken(Member member) {
         RefreshToken refreshToken = isPresentRefreshToken(member);
         if (null == refreshToken) {
-            return ResponseDto.fail("TOKEN_NOT_FOUND", "존재하지 않는 Token 입니다.");
+            return ResponseDto.fail(INVALID_TOKEN);
         }
 
         refreshTokenRepository.delete(refreshToken);

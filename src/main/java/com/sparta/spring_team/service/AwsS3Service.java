@@ -6,7 +6,6 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import com.sparta.spring_team.dto.response.ResponseDto;
-import com.sparta.spring_team.entity.Member;
 import com.sparta.spring_team.shared.PublicMethod;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +15,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
+
+import static com.sparta.spring_team.Exception.ErrorCode.FAIL_TO_UPLOAD;
+import static com.sparta.spring_team.Exception.ErrorCode.NULL_EXCEPTION;
 
 @RequiredArgsConstructor
 @Service
@@ -32,7 +34,7 @@ public class AwsS3Service {
         ResponseDto<?> result = publicMethod.checkLogin(request);
         if(!result.isSuccess()) return result;
 
-        if(multipartFile==null) return ResponseDto.fail("NULL_EXCEPTION","파일이 존재하지 않습니다.");
+        if(multipartFile==null) return ResponseDto.fail(NULL_EXCEPTION);
         String fileName = multipartFile.getOriginalFilename();
         String imagePath = "";
         ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -46,9 +48,8 @@ public class AwsS3Service {
 
         } catch (Exception e) {
 //            throw new RuntimeException(e);
-            return ResponseDto.fail("FAIL_TO_UPLOAD","이미지 업로드에 실패했습니다. "+ e.toString());
+            return ResponseDto.fail(FAIL_TO_UPLOAD);
         }
-
 
         return ResponseDto.success(imagePath);
     }
