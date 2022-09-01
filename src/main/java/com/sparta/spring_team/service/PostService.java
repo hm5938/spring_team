@@ -45,7 +45,11 @@ public class PostService {
         if (!result.isSuccess()) return result;
         Member member = (Member) result.getData();
 
-        String imageUrl = (String)imageUploader.uploadFile(multipartFile).getData();
+        //upload 실패하면 그대로 반환
+        ResponseDto<?> imageResult = imageUploader.uploadFile(multipartFile);
+        if(null == result.getData()) return imageResult;
+
+        String imageUrl = (String)imageResult.getData();
         requestDto.setImageUrl(imageUrl);
 
         Post post = postRepository.save(new Post(requestDto, member));
